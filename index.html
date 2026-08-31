@@ -2874,11 +2874,11 @@ function setupTouchDrag(handle, card, container) {
                                         </label>
                                         
                                         <!-- 點擊名稱可以跳轉回採購頁面看大圖 -->
-                                        <div class="flex items-center gap-1.5 flex-1 min-w-0 cursor-pointer" onclick="viewSpotShopping('${spotId}'); event.stopPropagation();">
-                                            <i class="fa-solid ${catInfo.icon} ${iconColor} text-xs w-4 text-center shrink-0"></i>
-                                            <span class="text-sm font-bold ${nameClass} truncate">${safeName}</span>
-                                            ${item.price && !isPurchased ? `<span class="text-[10px] text-highlight font-bold bg-white px-1.5 py-0.5 rounded shadow-sm border border-orange-100 shrink-0">¥${item.price}</span>` : ''}
-                                        </div>
+                                        <div class="flex items-start gap-1.5 flex-1 min-w-0 cursor-pointer" onclick="viewSpotShopping('${spotId}'); event.stopPropagation();">
+										    <i class="fa-solid ${catInfo.icon} ${iconColor} text-xs w-4 text-center shrink-0 mt-1"></i>
+										    <span class="text-sm font-bold ${nameClass} break-words whitespace-normal">${safeName}</span>
+										    ${item.price && !isPurchased ? `<span class="text-[10px] text-highlight font-bold bg-white px-1.5 py-0.5 rounded shadow-sm border border-orange-100 shrink-0 mt-0.5">¥${item.price}</span>` : ''}
+										</div>
                                     </div>
                                     
                                     ${!isPurchased ? `
@@ -3992,10 +3992,10 @@ function setupTouchDrag(handle, card, container) {
 									<!-- 左側：資訊與連結區 -->
 									<div class="flex-1 min-w-0 flex flex-col">
 										<div class="flex items-center flex-wrap gap-2 mb-1">
-											<p class="font-bold text-sm truncate transition-colors ${nameClass} max-w-[120px] md:max-w-[200px]">${item.name}</p>
-											<span class="text-gray-300 text-xs">-</span>
-											${priceDisplay}
-											<span class="text-[10px] px-1.5 py-0.5 rounded-md font-bold shadow-sm ${catInfo.bg} ${catInfo.text}">${catInfo.label}</span>
+										    <p class="font-bold text-sm transition-colors ${nameClass} break-words whitespace-normal flex-1 min-w-[120px]">${item.name}</p>
+										    <span class="text-gray-300 text-xs">-</span>
+										    ${priceDisplay}
+										    <span class="text-[10px] px-1.5 py-0.5 rounded-md font-bold shadow-sm ${catInfo.bg} ${catInfo.text}">${catInfo.label}</span>
 										</div>
 										<div class="flex items-center flex-wrap gap-1 mt-1 mb-1">
 											${item.isProxy && item.proxyTarget ? `<span class="text-[10px] px-1.5 py-0.5 rounded-md font-bold shadow-sm bg-teal-100 text-teal-700"><i class="fa-solid fa-user text-[8px] mr-1"></i>${item.proxyTarget}</span>` : ''}
