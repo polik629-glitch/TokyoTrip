@@ -2926,7 +2926,12 @@ function setupTouchDrag(handle, card, container) {
                     }
 
                     //  showDayDetail 內地圖 URL 判定片段
-					let imgHtml = spot.img ? `<img src="${spot.img}" class="w-full h-40 object-cover rounded-xl mt-3 mb-3 shadow-sm border border-gray-200" onerror="this.onerror=null; this.outerHTML='<div class=\\'w-full h-40 bg-gray-100 flex flex-col items-center justify-center text-gray-400 rounded-xl mt-3 mb-3 border border-gray-200 shadow-sm\\'><i class=\\'fa-solid fa-image-slash text-2xl mb-2\\'></i><span class=\\'textsm font-bold\\'>圖片載入失敗</span></div>';">` : '';
+					// 確保網址內的單引號不會破壞 JavaScript 語法
+					let safeImgUrl = spot.img ? spot.img.replace(/'/g, "\\'") : '';
+					
+					// 綁定點擊事件 (onclick) 與滑鼠游標樣式 (cursor-pointer)，並加入點擊縮放微動畫 (active:scale-[0.98])
+					let imgHtml = spot.img ? `<img src="${spot.img}" onclick="openImageViewer('${safeImgUrl}')" class="w-full h-40 object-cover rounded-xl mt-3 mb-3 shadow-sm border border-gray-200 cursor-pointer active:scale-[0.98] transition-transform" onerror="this.onerror=null; this.outerHTML='<div class=\\'w-full h-40 bg-gray-100 flex flex-col items-center justify-center text-gray-400 rounded-xl mt-3 mb-3 border border-gray-200 shadow-sm\\'><i class=\\'fa-solid fa-image-slash text-2xl mb-2\\'></i><span class=\\'text-sm font-bold\\'>圖片載入失敗</span></div>';">` : '';
+					
 					let finalMapUrl = '';
 					if (spot.mapUrl && spot.mapUrl.trim() !== '') {
 						finalMapUrl = spot.mapUrl;
