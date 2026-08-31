@@ -154,27 +154,31 @@
             
 
 			<!-- 氣候與天氣卡片 -->
-			<div class="card border-t-4 border-t-blue-400 bg-white">
-				<h3 class="font-bold text-lg text-primary mb-3"><i class="fa-solid fa-temperature-half mr-2 text-blue-400"></i>12月氣候概況與穿搭</h3>
-				<p class="text-xs text-gray-500 mb-4 leading-relaxed">
-					東京市區約 5-12°C（乾冷），輕井澤約 -5-5°C（寒冷多雪），*迪士尼因靠海風大，體感溫度會更低*。建議採用洋蔥式穿搭，必備：防水手套、毛帽、防滑鞋。
-				</p>
-				<div class="grid grid-cols-3 gap-2">
-					<a href="https://tenki.jp/leisure/3/15/80/100001/" target="_blank" class="bg-purple-50 border border-purple-200 rounded-xl p-2.5 flex flex-col items-center justify-center active:scale-95 transition">
-						<i class="fa-solid fa-wand-magic-sparkles text-purple-500 mb-1"></i>
-						<span class="text-[11px] font-bold text-purple-700 whitespace-nowrap">迪士尼天氣</span>
-					</a>
-					<a href="https://tenki.jp/forecast/3/23/4820/20321/" target="_blank" class="bg-teal-50 border border-teal-200 rounded-xl p-2.5 flex flex-col items-center justify-center active:scale-95 transition">
-						<i class="fa-solid fa-snowflake text-teal-500 mb-1"></i>
-						<span class="text-[11px] font-bold text-teal-700 whitespace-nowrap">輕井澤天氣</span>
-					</a>
-					<a href="https://tenki.jp/forecast/3/16/4410/13101/" target="_blank" class="bg-blue-50 border border-blue-200 rounded-xl p-2.5 flex flex-col items-center justify-center active:scale-95 transition">
-						<i class="fa-solid fa-cloud-sun text-blue-500 mb-1"></i>
-						<span class="text-[11px] font-bold text-blue-700 whitespace-nowrap">東京天氣</span>
-					</a>
-					
-					
-				</div>
+			<div class="card border-t-4 border-t-blue-400 bg-white interactive-card group" onclick="toggleGuideSection('guide-weather', this)">
+			    <div class="flex justify-between items-center min-h-[44px]">
+			        <h3 class="font-bold text-lg text-primary"><i class="fa-solid fa-temperature-half mr-2 text-blue-400"></i>12月氣候概況與穿搭</h3>
+			        <i class="fa-solid fa-chevron-down text-gray-400 collapse-icon"></i>
+			    </div>
+			    
+			    <div id="guide-weather" class="hidden-animate smooth-collapse mt-4 pt-4 border-t border-gray-100" onclick="event.stopPropagation()">
+			        <p class="text-xs text-gray-500 mb-4 leading-relaxed">
+			            東京市區約 5-12°C（乾冷），輕井澤約 -5-5°C（寒冷多雪），*迪士尼因靠海風大，體感溫度會更低*。建議採用洋蔥式穿搭，必備：防水手套、毛帽、防滑鞋。
+			        </p>
+			        <div class="grid grid-cols-3 gap-2">
+			            <a href="https://tenki.jp/leisure/3/15/80/100001/" target="_blank" class="bg-purple-50 border border-purple-200 rounded-xl p-2.5 flex flex-col items-center justify-center active:scale-95 transition">
+			                <i class="fa-solid fa-wand-magic-sparkles text-purple-500 mb-1"></i>
+			                <span class="text-[11px] font-bold text-purple-700 whitespace-nowrap">迪士尼天氣</span>
+			            </a>
+			            <a href="https://tenki.jp/forecast/3/23/4820/20321/" target="_blank" class="bg-teal-50 border border-teal-200 rounded-xl p-2.5 flex flex-col items-center justify-center active:scale-95 transition">
+			                <i class="fa-solid fa-snowflake text-teal-500 mb-1"></i>
+			                <span class="text-[11px] font-bold text-teal-700 whitespace-nowrap">輕井澤天氣</span>
+			            </a>
+			            <a href="https://tenki.jp/forecast/3/16/4410/13101/" target="_blank" class="bg-blue-50 border border-blue-200 rounded-xl p-2.5 flex flex-col items-center justify-center active:scale-95 transition">
+			                <i class="fa-solid fa-cloud-sun text-blue-500 mb-1"></i>
+			                <span class="text-[11px] font-bold text-blue-700 whitespace-nowrap">東京天氣</span>
+			            </a>
+			        </div>
+			    </div>
 			</div>
 			
             <div class="card border-t-4 border-t-blue-500 interactive-card group" onclick="toggleGuideSection('guide-flight', this)">
