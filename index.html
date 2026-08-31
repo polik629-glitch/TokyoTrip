@@ -679,7 +679,7 @@
 
     
     <!-- 底部主導航 (5個按鈕，各自分配專屬主題色) -->
-	<nav class="fixed bottom-0 w-full bg-white shadow-[0_-10px_20px_rgba(0,0,0,0.06)] border-t border-gray-100 rounded-t-3xl z-40 px-2 py-2 flex justify-between items-center text-[10px] text-gray-400 pb-safe">
+	<nav class="fixed bottom-4 left-4 right-4 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 rounded-3xl z-40 px-2 py-2 flex justify-between items-center text-[10px] text-gray-400">
 		<button id="nav-guide" class="nav-item flex flex-col items-center flex-1 py-1 min-h-[44px]" onclick="switchTab('guide')">
 			<i class="fa-solid fa-book-open text-lg mb-1"></i><span class="font-medium">指南</span>
 		</button>
@@ -696,6 +696,7 @@
 			<i class="fa-solid fa-folder-open text-lg mb-1"></i><span class="font-medium">文件</span>
 		</button>
 	</nav>
+	
 	
 	<!-- 身分切換 Bottom Sheet Modal -->
     <div id="user-switch-modal" class="fixed inset-0 bg-black/60 z-[300] hidden flex items-end sm:items-center justify-center sm:p-4 opacity-0 transition-opacity duration-300" onclick="closeUserModal()">
