@@ -128,36 +128,40 @@
 
     <div id="toast" class="toast bg-primary text-white px-6 py-3 rounded-full font-bold shadow-lg text-sm">操作成功！</div>
 
-	<header class="bg-primary text-white pt-10 pb-5 px-6 rounded-b-3xl shadow-soft relative">
-		<!-- 第一行：主標題獨佔一行 -->
-		<h1 class="text-2xl font-heading font-bold tracking-wider mb-2">🎄 2026 東京家族冬遊</h1>
-		
-		<!-- 第二行：日期資訊與身分切換按鈕 -->
-		<div class="flex justify-between items-center mt-2">
-            <p class="text-[13px] text-gray-300 font-medium"><i class="fa-regular fa-calendar-days mr-1.5"></i>12/5 - 12/12 ｜ 東京 & 輕井澤</p>
-            
-            <!-- 膠囊型身分與全域設定按鈕 -->
-            <div class="flex gap-2">
-                <!-- ✨ 新增：外層快速同步按鈕 -->
-                <button onclick="manualSync()" id="btn-quick-sync" class="flex items-center justify-center bg-white border border-gray-200 rounded-full w-9 h-9 text-sm font-bold transition active:scale-95 shadow-sm text-teal-600 hover:bg-teal-50 shrink-0" title="立即同步">
-                    <i class="fa-solid fa-rotate"></i>
-                </button>
-                
-                <!-- 膠囊型身分切換按鈕 -->
-                <button onclick="openUserModal()" class="flex items-center justify-center bg-white border border-gray-200 rounded-full px-3 py-1.5 text-sm font-bold transition active:scale-95 shadow-sm text-primary shrink-0">
-                    <i class="fa-solid fa-user-circle mr-1.5 text-gray-400"></i>
-                    <span id="header-user-name">我是誰</span>
-                    <i class="fa-solid fa-caret-down text-[10px] ml-1.5 text-gray-400"></i>
-                </button>
-                
-                <!-- ⚙️ 全域設定按鈕 -->
-                <button onclick="openGlobalSettings()" class="flex items-center justify-center bg-white border border-gray-200 rounded-full w-9 h-9 text-sm font-bold transition active:scale-95 shadow-sm text-gray-500 hover:text-accent shrink-0">
-                    <i class="fa-solid fa-gear"></i>
-                </button>
-            </div>
-        </div>
-	
-	
+	<header class="bg-primary text-white pt-10 pb-4 px-5 sm:px-6 rounded-b-3xl shadow-soft relative">
+		<!-- 第一行：主標題與右側控制按鈕 -->
+		<div class="flex justify-between items-start gap-2">
+			
+			<!-- 標題 (小螢幕時讓 2026 與 冬遊 分行，避免擠壓按鈕) -->
+			<h1 class="text-xl sm:text-2xl font-heading font-bold tracking-wider leading-tight pt-1">
+				🎄 2026<br class="sm:hidden">東京家族冬遊
+			</h1>
+			
+			<!-- 膠囊型身分與全域設定按鈕群 (靠右對齊) -->
+			<div class="flex gap-1.5 shrink-0">
+				<!-- 🔄 快速同步按鈕 -->
+				<button onclick="manualSync()" id="btn-quick-sync" class="flex items-center justify-center bg-white border border-gray-200 rounded-full w-8 h-8 sm:w-9 sm:h-9 text-sm font-bold transition active:scale-95 shadow-sm text-teal-600 hover:bg-teal-50 shrink-0" title="立即同步">
+					<i class="fa-solid fa-rotate"></i>
+				</button>
+				
+				<!-- 👤 身分切換按鈕 -->
+				<button onclick="openUserModal()" class="flex items-center justify-center bg-white border border-gray-200 rounded-full px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-bold transition active:scale-95 shadow-sm text-primary shrink-0">
+					<i class="fa-solid fa-user-circle mr-1 sm:mr-1.5 text-gray-400"></i>
+					<span id="header-user-name">我是誰</span>
+					<i class="fa-solid fa-caret-down text-[10px] ml-1 sm:ml-1.5 text-gray-400"></i>
+				</button>
+				
+				<!-- ⚙️ 全域設定按鈕 -->
+				<button onclick="openGlobalSettings()" class="flex items-center justify-center bg-white border border-gray-200 rounded-full w-8 h-8 sm:w-9 sm:h-9 text-sm font-bold transition active:scale-95 shadow-sm text-gray-500 hover:text-accent shrink-0">
+					<i class="fa-solid fa-gear"></i>
+				</button>
+			</div>
+		</div>
+
+		<!-- 第二行：日期與地點資訊 (獨立一行，乾淨俐落) -->
+		<div class="mt-3">
+			<p class="text-[12px] sm:text-[13px] text-gray-300 font-medium"><i class="fa-regular fa-calendar-days mr-1.5"></i>12/5 - 12/12 ｜ 東京 & 輕井澤</p>
+		</div>
 	</header>
 
     <main class="p-6 relative mt-6">
