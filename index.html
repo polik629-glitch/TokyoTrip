@@ -2205,66 +2205,80 @@
 			}); 
 		}
 		
-		// ======================= 一鍵恢復原廠設定 (Factory Reset) =======================
-		function confirmResetToFactory() {
-			openSysConfirm(
-				'💥 極度危險警告', 
-				'確定要「一鍵清空所有測試資料」嗎？\n\n這將會清除您與家人所有的：\n1. 記帳與採購紀錄\n2. 所有的離線圖片與文件\n3. 待辦事項與打包清單\n4. 恢復行程為預設狀態\n\n並且會立刻同步洗白雲端資料！此動作絕對無法復原！', 
-				'確定全部清空', 
-				async () => { 
-					showToast('🧹 正在進行全系統深度清理，請稍候...');
-
-					// 1. 清理文件保險箱 (含實體圖片)
-					for (const meta of vaultCache) {
-						if (meta.imageKey) await deleteImageFromDB(meta.imageKey);
-					}
-					vaultCache = [];
-					await localForage.setItem('trip_vault_metadata', vaultCache);
-
-					// 2. 清理採購清單 (含實體圖片)
-					for (const shop of shoppingListCache) {
-						if (shop.imageKey) await deleteImageFromDB(shop.imageKey);
-					}
-					shoppingListCache = [];
-					persistShoppingList();
-
-					// 3. 清理行程資料 (含實體圖片)
-					for (let i = 1; i <= 8; i++) {
-						if (itineraryCache && itineraryCache[i] && itineraryCache[i].spots) {
-							for (const spot of itineraryCache[i].spots) {
-								if (spot.imageKey) await deleteImageFromDB(spot.imageKey);
-							}
-						}
-					}
-					itineraryCache = JSON.parse(JSON.stringify(defaultItineraryData));
-					persistItinerary();
-
-					// 4. 清理記帳資料
-					expensesCache = { pre: [], daily: [] };
-					persistExpenses();
-
-					// 5. 清理指南頁面的 LocalStorage (待辦、家人打包清單、店家快取、排序)
-					localStorage.removeItem('trip_todo_dynamic_v5');
-					localStorage.removeItem('trip_recent_stores');
-					localStorage.removeItem('trip_guide_order');
-					recentStoresCache = [];
-					familyMembers.forEach(m => localStorage.removeItem(`trip_checklist_${m}`));
-
-					// 6. 觸發背景同步，把乾淨的狀態強制推上雲端！
-					if (typeof triggerAutoSync === 'function') triggerAutoSync();
-
-					// 7. 強制刷新所有畫面並回到首頁
-					renderAllViews();
-					switchTab('guide'); // 切換回指南頁面
-					if (typeof hideDayDetail === 'function') hideDayDetail(); // 確保行程跳出明細
-					
-					// 延遲跳出完成通知
-					setTimeout(() => {
-						showToast('✨ 系統已完全恢復為原廠預設乾淨狀態！');
-					}, 1000);
-				}
-			);
-		}
+// ======================= 一鍵恢復原廠設定 (Factory Reset) 終極防呆版 =======================
+	function confirmResetToFactory() {
+	    openSysConfirm(
+	        '💥 極度危險警告', 
+	        '確定要「一鍵清空所有測試資料」嗎？\n\n這將會清除您與家人所有的：\n1. 記帳與採購紀錄\n2. 所有的離線圖片與文件\n3. 待辦事項與打包清單\n4. 恢復行程為預設狀態\n\n並且會立刻同步洗白雲端資料！此動作絕對無法復原！', 
+	        '確定全部清空', 
+	        async () => { 
+	            showToast('🧹 正在進行全系統深度清理，請稍候...');
+	
+	            try {
+	                // 1. 清理文件保險箱 (加上 || [] 防止 null 造成的隱形當機)
+	                for (const meta of (vaultCache || [])) {
+	                    if (meta.imageKey) await deleteImageFromDB(meta.imageKey);
+	                }
+	                vaultCache = [];
+	                if (typeof localforage !== 'undefined' && localforage.setItem) {
+	                    await localforage.setItem('trip_vault_metadata', vaultCache);
+	                }
+	
+	                // 2. 清理採購清單
+	                for (const shop of (shoppingListCache || [])) {
+	                    if (shop.imageKey) await deleteImageFromDB(shop.imageKey);
+	                }
+	                shoppingListCache = [];
+	                persistShoppingList();
+	
+	                // 3. 清理行程資料
+	                for (let i = 1; i <= 8; i++) {
+	                    if (itineraryCache && itineraryCache[i] && itineraryCache[i].spots) {
+	                        for (const spot of itineraryCache[i].spots) {
+	                            if (spot.imageKey) await deleteImageFromDB(spot.imageKey);
+	                        }
+	                    }
+	                }
+	                if (typeof defaultItineraryData !== 'undefined') {
+	                    itineraryCache = JSON.parse(JSON.stringify(defaultItineraryData));
+	                }
+	                persistItinerary();
+	
+	                // 4. 清理記帳資料
+	                expensesCache = { pre: [], daily: [] };
+	                persistExpenses();
+	
+	                // 5. 清理指南頁面的 LocalStorage
+	                localStorage.removeItem('trip_todo_dynamic_v5');
+	                localStorage.removeItem('trip_recent_stores');
+	                localStorage.removeItem('trip_guide_order');
+	                recentStoresCache = [];
+	                if (typeof familyMembers !== 'undefined') {
+	                    familyMembers.forEach(m => localStorage.removeItem(`trip_checklist_${m}`));
+	                }
+	
+	                // 6. 強制推上雲端洗白！(拿掉 3 秒等待，直接鎖死並上傳)
+	                hasPulledCloud = true; // 強制解鎖雲端防呆機制
+	                showToast('☁️ 正在抹除雲端資料...');
+	                await pushToGist(); // 直接等待雲端覆寫完成
+	
+	                // 7. 強制刷新所有畫面並回到首頁
+	                if (typeof renderAllViews === 'function') renderAllViews();
+	                if (typeof switchTab === 'function') switchTab('guide'); 
+	                if (typeof hideDayDetail === 'function') hideDayDetail(); 
+	                
+	                // 完成通知
+	                setTimeout(() => {
+	                    showToast('✨ 系統與雲端皆已完全恢復乾淨狀態！');
+	                }, 500);
+	
+	            } catch (error) {
+	                console.error("Factory Reset Error:", error);
+	                alert("清理過程中發生錯誤：" + error.message);
+	            }
+	        }
+	    );
+	}
 		
 		function triggerSOSLocation() {
 			if (!navigator.geolocation) {
