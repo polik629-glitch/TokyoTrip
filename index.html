@@ -1608,6 +1608,10 @@
     <style>.pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }</style>
 
 <script>
+    // ================= 解決資料庫套件大小寫相容性問題 =================
+    if (typeof localforage !== 'undefined' && typeof window.localForage === 'undefined') {
+        window.localForage = localforage;
+    }
 
 		// ================= 全域圖片破圖防呆處理 =================
 		window.addEventListener('error', function(e) {
