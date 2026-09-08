@@ -6849,10 +6849,10 @@ function setupTouchDrag(handle, card, container) {
                 "小孩用品": ["推車","推車雨罩","尿布","小朋友零食","耳溫槍","野餐墊"], 
                 "其他用品": ["小塑膠袋（裝垃圾、濕衣物）","折疊購物袋（採買很好用）","口罩","A4資料夾（存放預約單、護照影本、重要文件）","雨具（折疊傘／輕便雨衣）"] 
             };
-            if (!localStorage.getItem('trip_checklist_dynamic_v7')) {
+            //if (!localStorage.getItem('trip_checklist_dynamic_v7')) {
                 let formattedData = {}; for (let cat in initialChecklistData) { formattedData[cat] = initialChecklistData[cat].map((text, idx) => ({ id: Date.now() + idx + Math.random(), text: text, checked: false })); }
                 localStorage.setItem('trip_checklist_dynamic_v7', JSON.stringify(formattedData));
-            }
+           // }
         }
 
         function renderChecklist() {
