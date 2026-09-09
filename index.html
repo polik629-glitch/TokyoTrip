@@ -4278,35 +4278,39 @@
 
 
 		async function viewVaultFile(id) {
-            let item = vaultCache.find(v => v.id === id);
-            
-            // 雙重保險：如果 cache 找不到，嘗試直接用 id 當作 key 去資料庫撈
-            let fileKey = item ? item.fileKey : `vault_file_${id}`;
-            let blob = await localForage.getItem(fileKey);
+			let item = vaultCache.find(v => v.id === id);
+			if (!item) return alert("找不到檔案記錄！");
 
-            // 如果還是找不到，嘗試找找看有沒有直接存 blob 的狀況
-            if (!blob && item && item.fileKey) {
-                blob = await localForage.getItem(item.fileKey);
-            }
+			// 💡 修正：優先使用正確的 imageKey，並加上多重防呆確保能撈到檔案
+			let blob = null;
+			if (item.imageKey) {
+				blob = await localForage.getItem(item.imageKey);
+			}
+			if (!blob && item.fileKey) {
+				blob = await localForage.getItem(item.fileKey);
+			}
+			if (!blob) {
+				blob = await localForage.getItem(`vault_img_${id}`);
+			}
 
-            if (!blob) {
-                alert("⚠️ 找不到實體檔案！可能尚未同步到此裝置。");
-                return;
-            }
+			if (!blob) {
+				alert("⚠️ 找不到實體檔案！可能尚未同步到此裝置。");
+				return;
+			}
 
-            let url = URL.createObjectURL(blob);
-            let fileName = item ? item.name : '文件';
+			let url = URL.createObjectURL(blob);
+			let fileName = item.name || '文件';
 
-            // 強效判斷是否為 PDF
-            const isPdf = (fileName && fileName.toLowerCase().includes('.pdf')) || 
-                          (blob.type && blob.type.includes('pdf'));
+			// 強效判斷是否為 PDF
+			const isPdf = (fileName && fileName.toLowerCase().includes('.pdf')) || 
+						  (blob.type && blob.type.includes('pdf'));
 
-            if (isPdf) {
-                openPdfViewer(url, fileName);
-            } else {
-                openImageViewer(url);
-            }
-        }
+			if (isPdf) {
+				openPdfViewer(url, fileName);
+			} else {
+				openImageViewer(url);
+			}
+		}
 		
 		// ✨ 新增：開啟 PDF 專屬檢視器
         function openPdfViewer(url, title) {
