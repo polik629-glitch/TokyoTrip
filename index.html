@@ -4171,62 +4171,36 @@
         }
 
         async function handleVaultUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+			const file = e.target.files[0];
+			if (!file) return;
 
-            const labelNode = document.getElementById('modal-vault-upload-label');
-            const iconNode = document.getElementById('modal-vault-upload-icon');
-            const textNode = document.getElementById('modal-vault-upload-text');
+			// 💡 關鍵修復：直接將檔案賦值給 currentVaultBlob 供後續存檔使用
+			currentVaultBlob = file;
 
-            // 判斷是否為 PDF 或非圖片檔案
-            if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
-                currentVaultBlob = file; // 直接抓取原始 PDF 檔案
-                
-                if (labelNode) {
-                    labelNode.className = 'w-full bg-green-50 border-2 border-dashed border-green-400 transition rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer min-h-[100px]';
-                    iconNode.className = 'fa-solid fa-file-pdf text-3xl text-red-500 mb-2'; // 換成 PDF 紅色圖示
-                    textNode.innerText = `已選擇 PDF: ${file.name}`;
-                    textNode.className = 'text-sm text-green-600 font-bold truncate max-w-[250px]';
-                }
-                showToast('📄 PDF 檔案讀取成功！');
-                return;
-            }
+			const labelNode = document.getElementById('modal-vault-upload-label');
+			const iconNode = document.getElementById('modal-vault-upload-icon');
+			const textNode = document.getElementById('modal-vault-upload-text');
 
-            // 若為一般圖片，維持原本的壓縮邏輯
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    let w = img.width, h = img.height;
-                    const MAX = 1600; 
-                    if (w > MAX || h > MAX) {
-                        if (w > h) { h = Math.round(h * (MAX / w)); w = MAX; } 
-                        else { w = Math.round(w * (MAX / h)); h = MAX; }
-                    }
-                    canvas.width = w; canvas.height = h;
-                    ctx.drawImage(img, 0, 0, w, h);
-                    
-                    canvas.toBlob(function(blob) {
-                        currentVaultBlob = blob;
-                        if (currentVaultPreviewUrl) URL.revokeObjectURL(currentVaultPreviewUrl);
-                        currentVaultPreviewUrl = URL.createObjectURL(blob);
-                        
-                        if (labelNode) {
-                            labelNode.className = 'w-full bg-green-50 border-2 border-dashed border-green-400 transition rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer min-h-[100px]';
-                            iconNode.className = 'fa-solid fa-check-circle text-3xl text-green-500 mb-2';
-                            textNode.innerText = '文件已成功解析備妥';
-                            textNode.className = 'text-sm text-green-600 font-bold';
-                        }
-                        showToast('📷 圖片讀取成功！');
-                    }, 'image/jpeg', 0.8);
-                };
-                img.onerror = function() { alert("❌ 檔案解析失敗！"); e.target.value = ''; };
-                img.src = evt.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
+			if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+				if (labelNode) {
+					labelNode.className = 'w-full bg-green-50 border-2 border-dashed border-green-400 transition rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer min-h-[100px]';
+					iconNode.className = 'fa-solid fa-file-pdf text-3xl text-red-500 mb-2';
+					textNode.innerText = `已選擇 PDF: ${file.name}`;
+					textNode.className = 'text-sm text-green-600 font-bold truncate max-w-[250px]';
+				}
+				showToast('📄 PDF 檔案讀取成功！');
+				return;
+			}
+
+			// 若為一般圖片
+			if (labelNode) {
+				labelNode.className = 'w-full bg-green-50 border-2 border-dashed border-green-400 transition rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer min-h-[100px]';
+				iconNode.className = 'fa-solid fa-check-circle text-3xl text-green-500 mb-2';
+				textNode.innerText = `已選擇圖片: ${file.name}`;
+				textNode.className = 'text-sm text-green-600 font-bold';
+			}
+			showToast('📷 圖片讀取成功！');
+		}
 
 		// ✨ 提交儲存：將文字資訊存入快取，圖片實體存入 IndexedDB
 		async function submitVaultFile() {
