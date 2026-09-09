@@ -4279,24 +4279,32 @@
 
 		async function viewVaultFile(id) {
             let item = vaultCache.find(v => v.id === id);
-            if (!item || !item.fileKey) return alert("找不到檔案記錄！");
+            
+            // 雙重保險：如果 cache 找不到，嘗試直接用 id 當作 key 去資料庫撈
+            let fileKey = item ? item.fileKey : `vault_file_${id}`;
+            let blob = await localForage.getItem(fileKey);
 
-            let blob = await localForage.getItem(item.fileKey);
+            // 如果還是找不到，嘗試找找看有沒有直接存 blob 的狀況
+            if (!blob && item && item.fileKey) {
+                blob = await localForage.getItem(item.fileKey);
+            }
+
             if (!blob) {
                 alert("⚠️ 找不到實體檔案！可能尚未同步到此裝置。");
                 return;
             }
 
             let url = URL.createObjectURL(blob);
+            let fileName = item ? item.name : '文件';
 
-            // ✨ 強效判斷：不管副檔名為何，只要資料庫標記是 pdf、或者 blob 類型是 pdf，一律使用 PDF 專屬視窗
-            const isPdf = (item.name && item.name.toLowerCase().includes('.pdf')) || 
+            // 強效判斷是否為 PDF
+            const isPdf = (fileName && fileName.toLowerCase().includes('.pdf')) || 
                           (blob.type && blob.type.includes('pdf'));
 
             if (isPdf) {
-                openPdfViewer(url, item.name || '文件');
+                openPdfViewer(url, fileName);
             } else {
-                openImageViewer(url); // 一般圖片才用大圖檢視器
+                openImageViewer(url);
             }
         }
 		
