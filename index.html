@@ -4283,19 +4283,20 @@
 
             let blob = await localForage.getItem(item.fileKey);
             if (!blob) {
-                alert("⚠️ 找不到實體檔案檔！可能尚未同步到此裝置。");
+                alert("⚠️ 找不到實體檔案！可能尚未同步到此裝置。");
                 return;
             }
 
             let url = URL.createObjectURL(blob);
 
-            // 判斷是否為 PDF 檔案
-            if ((item.name && item.name.toLowerCase().endsWith('.pdf')) || blob.type === 'application/pdf') {
-                // ✨ 呼叫全新的 PDF 專屬滑動檢視器
+            // ✨ 強效判斷：不管副檔名為何，只要資料庫標記是 pdf、或者 blob 類型是 pdf，一律使用 PDF 專屬視窗
+            const isPdf = (item.name && item.name.toLowerCase().includes('.pdf')) || 
+                          (blob.type && blob.type.includes('pdf'));
+
+            if (isPdf) {
                 openPdfViewer(url, item.name || '文件');
             } else {
-                // 一般圖片繼續使用原本的檢視器
-                openImageViewer(url);
+                openImageViewer(url); // 一般圖片才用大圖檢視器
             }
         }
 		
