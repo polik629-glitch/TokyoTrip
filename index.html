@@ -4235,45 +4235,45 @@
 			const categoryInput = document.querySelector('input[name="modal-vault-category"]:checked');
 			const category = categoryInput ? categoryInput.value : '住宿/其他';
 			
+			console.log("📌 準備儲存檔案，檔名:", name);
+			console.log("📌 當前暫存的 Blob 物件 (currentVaultBlob):", currentVaultBlob);
+
 			if (!name) return alert('⚠️ 請輸入「文件名稱」！');
-			if (!currentVaultBlob) return alert('⚠️ 請先選擇上傳圖片！');
+			if (!currentVaultBlob) return alert('⚠️ 請先選擇上傳檔案/圖片！');
 
 			const fileId = Date.now().toString();
-            // 建立圖片專屬的 DB Key
-            const imageDbKey = `vault_img_${fileId}`;
+			const imageDbKey = `vault_img_${fileId}`;
 			
-			// 1. 建立文件的中繼資料 (文字屬性)
 			const metaData = { 
 				id: fileId, 
 				name: name, 
 				category: category, 
 				owner: currentUser || '未指定',
-                imageKey: imageDbKey, // 紀錄圖片存在 DB 哪把鑰匙下
+				imageKey: imageDbKey,
 				timestamp: new Date().toISOString()
 			};
 			
-			// 2. 將實際的 Blob 圖片獨立存入 IndexedDB
+			// 寫入資料庫
 			const isImageSaved = await saveImageToDB(imageDbKey, currentVaultBlob);
+			console.log("📌 檔案寫入資料庫結果:", isImageSaved);
             
-            if (isImageSaved) {
-                // 3. 圖片儲存成功後，才將中繼資料寫入快取與 IndexedDB
-                vaultCache.unshift(metaData);
-                try {
-                    await localForage.setItem('trip_vault_metadata', vaultCache);
-                    // 觸發雲端同步 (僅同步 Metadata)
-                    if (typeof triggerAutoSync === 'function') triggerAutoSync(); 
-                } catch (e) {
-                    alert(`❌ 中繼資料儲存失敗！`); 
-                    vaultCache.shift(); 
-                    return; 
-                }
-                
-                closeVaultModal();
-                renderVaultList();
-                showToast('🔒 文件已安全存入離線保險箱');
-            } else {
-                alert('❌ 圖片寫入資料庫失敗，請重試！');
-            }
+			if (isImageSaved) {
+				vaultCache.unshift(metaData);
+				try {
+					await localforage.setItem('trip_vault_metadata', vaultCache);
+					if (typeof triggerAutoSync === 'function') triggerAutoSync(); 
+				} catch (e) {
+					alert(`❌ 中繼資料儲存失敗！`); 
+					vaultCache.shift(); 
+					return; 
+				}
+				
+				closeVaultModal();
+				renderVaultList();
+				showToast('🔒 文件已安全存入離線保險箱');
+			} else {
+				alert('❌ 圖片寫入資料庫失敗，請重試！');
+			}
 		}
 		
 		// 🔌 補上這段漏掉的資料庫寫入核心函式
