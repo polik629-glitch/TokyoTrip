@@ -4498,12 +4498,14 @@
 				let exportData = [];
 				for (let item of vaultCache) {
 					let copy = { ...item };
-					// ✨ 雙向支援：優先找 imageKey，其次找 fileKey
+					
+					// ✨ 關鍵修正：明確指定要從 imageKey（或備用的 fileKey）去抓取實體檔案
 					let targetKey = copy.imageKey || copy.fileKey;
+					
 					if (targetKey && typeof localForage !== 'undefined') {
 						let blob = await localForage.getItem(targetKey);
 						if (blob) {
-							copy.fileData = await blobToBase64(blob); // 轉成 Base64 打包
+							copy.fileData = await blobToBase64(blob); // 成功轉成 Base64 打包！
 						}
 					}
 					exportData.push(copy);
