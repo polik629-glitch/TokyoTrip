@@ -4281,7 +4281,7 @@
 			let item = vaultCache.find(v => v.id === id);
 			if (!item) return alert("找不到檔案記錄！");
 
-			// 💡 修正：優先使用正確的 imageKey，並加上多重防呆確保能撈到檔案
+			// 💡 修正：優先使用正確的 imageKey 來尋找實體檔案
 			let blob = null;
 			if (item.imageKey) {
 				blob = await localForage.getItem(item.imageKey);
@@ -4290,6 +4290,7 @@
 				blob = await localForage.getItem(item.fileKey);
 			}
 			if (!blob) {
+				// 終極防呆：嘗試用原本的 ID 組合找找看
 				blob = await localForage.getItem(`vault_img_${id}`);
 			}
 
