@@ -4509,16 +4509,22 @@
 			try {
 				showToast('📦 正在打包文件與檔案，請稍候...');
 				let exportData = [];
+				
 				for (let item of vaultCache) {
 					let copy = { ...item };
 					let targetKey = copy.imageKey || copy.fileKey || `vault_img_${copy.id}`;
 					
+					console.log("正在檢查項目:", copy.name, "尋找 Key:", targetKey);
+
 					if (targetKey) {
 						let blob = await safeDbGet(targetKey);
+						console.log("從資料庫撈出來的 Blob 結果:", blob);
+						
 						if (blob) {
-							copy.fileData = await blobToBase64(blob); // 成功轉成 Base64 打包！
+							copy.fileData = await blobToBase64(blob);
+							console.log("成功轉成 Base64！");
 						} else {
-							console.warn("找不到實體檔案的 Key:", targetKey);
+							console.warn("⚠️ 警告：資料庫裡找不到這個 Key 對應的實體檔案！");
 						}
 					}
 					exportData.push(copy);
@@ -4538,7 +4544,7 @@
 				document.body.removeChild(a);
 				URL.revokeObjectURL(url);
 				
-				showToast('✅ 完整備份檔下載成功！檔案已順利打包');
+				showToast('✅ 備份檔產生完畢！');
 			} catch (e) {
 				console.error(e);
 				alert('❌ 匯出失敗：' + e.message);
