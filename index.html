@@ -4276,6 +4276,21 @@
             }
 		}
 
+		// 🔌 補上這段漏掉的資料庫寫入核心函式
+		async function saveImageToDB(key, fileOrBlob) {
+			try {
+				if (typeof localforage === 'undefined') {
+					console.error("❌ localforage 套件未載入！");
+					return false;
+				}
+				await localforage.setItem(key, fileOrBlob);
+				console.log("✅ 實體檔案成功寫入 IndexedDB，Key:", key);
+				return true;
+			} catch (err) {
+				console.error(`[IndexedDB] 檔案 ${key} 寫入失敗：`, err);
+				return false;
+			}
+		}
 
 		async function viewVaultFile(id) {
 			let item = vaultCache.find(v => v.id === id);
