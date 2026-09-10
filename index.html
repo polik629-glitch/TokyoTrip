@@ -4639,7 +4639,7 @@
 			showToast('已複製文件資料！');
 		}
 
-		// 📥 修正後的完整匯入函式 (安全寫入版)
+// 📥 修正後的完整匯入函式 (安全寫入版，請確保整個檔案只有這一個！)
 		async function processVaultImport(mode) {
 			const jsonStr = document.getElementById('vault-io-textarea').value.trim();
 			if (!jsonStr) return alert("請先貼上資料或選擇檔案！");
