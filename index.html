@@ -1107,23 +1107,22 @@
                     </label>
                 </div>
 				
-			<!-- 連續新增與鎖定地點勾選區 (加上 mb-24 把空間撐開，避免被按鈕蓋住) -->
-			<div class="pt-3 border-t border-gray-100 flex items-center justify-between mb-24 px-1">
-				<label class="flex items-center cursor-pointer select-none">
-					<input type="checkbox" id="modal-continuous-add" class="w-5 h-5 text-orange-500 border-gray-300 rounded focus:ring-orange-500 transition" onchange="localStorage.setItem('trip_continuous_add', this.checked)">
-					<span class="ml-2 text-sm font-bold text-gray-600">連續新增 (不關視窗)</span>
-				</label>
-				<label class="flex items-center cursor-pointer select-none">
-					<input type="checkbox" id="modal-lock-location" class="w-5 h-5 text-orange-500 border-gray-300 rounded focus:ring-orange-500 transition" onchange="localStorage.setItem('trip_lock_location', this.checked)">
-					<span class="ml-2 text-sm font-bold text-gray-600">鎖定行程/店鋪</span>
-				</label>
-			</div>
-			
-            <!-- ✨ 修正：置底懸浮按鈕，不管怎麼滑都會固定在最下方，避開 Safari 導覽列 -->
-            <div class="sticky bottom-0 -mx-6 -mb-6 px-6 py-4 bg-white/95 backdrop-blur-md border-t border-gray-100 z-50 rounded-b-3xl pb-safe">
-                <button id="shop-modal-submit-btn" onclick="submitShopModal()" class="w-full bg-orange-500 text-white font-bold py-4 rounded-xl shadow-[0_-4px_15px_rgba(0,0,0,0.05)] flex justify-center items-center active:scale-95 text-base hover:bg-orange-600 min-h-[44px]">
-                    <i class="fa-solid fa-plus mr-2"></i> 確認加入清單
-                </button>
+			<!-- 連續新增與鎖定地點勾選區 (把原本的 mb-24 拿掉，改成一般的 mb-5) -->
+				<div class="pt-3 border-t border-gray-100 flex items-center justify-between mb-5 px-1">
+				    <label class="flex items-center cursor-pointer select-none">
+				        <input type="checkbox" id="modal-continuous-add" class="w-5 h-5 text-orange-500 border-gray-300 rounded focus:ring-orange-500 transition" onchange="localStorage.setItem('trip_continuous_add', this.checked)">
+				        <span class="ml-2 text-sm font-bold text-gray-600">連續新增 (不關視窗)</span>
+				    </label>
+				    <label class="flex items-center cursor-pointer select-none">
+				        <input type="checkbox" id="modal-lock-location" class="w-5 h-5 text-orange-500 border-gray-300 rounded focus:ring-orange-500 transition" onchange="localStorage.setItem('trip_lock_location', this.checked)">
+				        <span class="ml-2 text-sm font-bold text-gray-600">鎖定行程/店鋪</span>
+				    </label>
+				</div>
+				
+				<!-- 移除 sticky 外框，直接讓按鈕順著內容排在最下方 -->
+				<button id="shop-modal-submit-btn" onclick="submitShopModal()" class="w-full bg-orange-500 text-white font-bold py-4 rounded-xl shadow-md flex justify-center items-center active:scale-95 text-base hover:bg-orange-600 min-h-[44px] mt-2">
+				    <i class="fa-solid fa-plus mr-2"></i> 確認加入清單
+				</button>
             </div>
         </div>
     </div>
