@@ -866,11 +866,11 @@
             </div>
 
             <div id="shared-fields" class="smooth-collapse hidden-animate p-4 bg-accent/5 rounded-xl border border-accent/20 mb-5 space-y-4">
-				<div class="flex flex-col">
-					<span class="text-sm text-accent font-bold mb-2 ml-1">誰先付的錢？</span>
-					<select id="expense-payer" class="p-3 bg-white rounded-lg text-sm outline-none font-bold text-gray-700 border border-accent/20 cursor-pointer min-h-[44px]"></select>
-				</div>
-				<div class="flex flex-col">
+                <div class="flex flex-col">
+                    <span class="text-sm text-accent font-bold mb-2 ml-1">誰先付的錢？</span>
+                    <select id="expense-payer" class="p-3 bg-white rounded-lg text-sm outline-none font-bold text-gray-700 border border-accent/20 cursor-pointer min-h-[44px]"></select>
+                </div>
+                <div class="flex flex-col">
 					<div class="flex justify-between items-end mb-2 ml-1">
 						<span class="text-sm text-accent font-bold">有誰要一同付費（分攤）？</span>
 						<div class="flex gap-2">
@@ -878,20 +878,9 @@
 							<button type="button" onclick="clearAllSplitMembers('standard')" class="text-[10px] bg-gray-100 text-gray-500 px-2.5 py-1 rounded font-bold border border-gray-200 active:scale-95 transition">僅留自己</button>
 						</div>
 					</div>
-					
-					<!-- ✨ 新增：分攤模式切換按鈕 (standard 專屬) -->
-					<div class="flex bg-gray-100 p-1 rounded-lg mb-2 border border-gray-200">
-						<button type="button" id="btn-mode-equal-standard" onclick="setSplitMode('standard', 'equal')" class="flex-1 py-1.5 text-xs font-bold rounded bg-white text-accent shadow-sm transition">均分 (預設)</button>
-						<button type="button" id="btn-mode-custom-standard" onclick="setSplitMode('standard', 'custom')" class="flex-1 py-1.5 text-xs font-bold rounded text-gray-500 hover:bg-gray-200 transition">按金額</button>
-					</div>
-
-					<!-- 成員名單容器 -->
 					<div id="split-members-container" class="flex flex-wrap gap-2 p-3 bg-white rounded-lg border border-accent/20"></div>
-					
-					<!-- ✨ 新增：防呆核對提示區 (按金額模式下才會顯示) -->
-					<div id="split-validation-standard" class="hidden mt-2 p-2 rounded-lg text-xs font-bold text-center"></div>
 				</div>
-			</div>
+            </div>
 
            <!-- 🌟 重新設定：完美懸浮置底按鈕 (與採購視窗同款寫法，解決點擊無效) -->
             <div class="sticky bottom-0 -mx-6 -mb-6 px-6 py-4 bg-white/95 backdrop-blur-md border-t border-gray-100 z-50 rounded-b-3xl pb-safe mt-4">
@@ -938,28 +927,13 @@
             </p>
 
             <div id="edit-shared-fields" class="hidden p-3 bg-accent/5 rounded-xl border border-accent/20 mb-6 space-y-3">
-				<div class="flex flex-col">
-					<div class="flex justify-between items-end mb-2 ml-1">
-						<span class="text-sm text-accent font-bold">參與分攤成員：</span>
-						<div class="flex gap-2">
-							<button type="button" onclick="selectAllSplitMembers('edit')" class="text-[10px] bg-accent/10 text-accent px-2.5 py-1 rounded font-bold border border-accent/20 active:scale-95 transition">全選</button>
-							<button type="button" onclick="clearAllSplitMembers('edit')" class="text-[10px] bg-gray-100 text-gray-500 px-2.5 py-1 rounded font-bold border border-gray-200 active:scale-95 transition">僅留自己</button>
-						</div>
-					</div>
-
-					<!-- ✨ 新增：分攤模式切換按鈕 (edit 專屬) -->
-					<div class="flex bg-gray-100 p-1 rounded-lg mb-2 border border-gray-200">
-						<button type="button" id="btn-mode-equal-edit" onclick="setSplitMode('edit', 'equal')" class="flex-1 py-1.5 text-xs font-bold rounded bg-white text-accent shadow-sm transition">均分 (預設)</button>
-						<button type="button" id="btn-mode-custom-edit" onclick="setSplitMode('edit', 'custom')" class="flex-1 py-1.5 text-xs font-bold rounded text-gray-500 hover:bg-gray-200 transition">按金額</button>
-					</div>
-
-					<!-- 成員名單容器 -->
-					<div id="edit-split-members-container" class="flex flex-wrap gap-2 p-2 bg-white rounded-lg border border-accent/20"></div>
-
-					<!-- ✨ 新增：防呆核對提示區 (按金額模式下才會顯示) -->
-					<div id="split-validation-edit" class="hidden mt-2 p-2 rounded-lg text-xs font-bold text-center"></div>
-				</div>
-			</div>
+                <div class="flex flex-col">
+                    <div class="flex justify-between items-end mb-2 ml-1">
+                        <span class="text-sm text-accent font-bold">參與分攤成員：</span>
+                    </div>
+                    <div id="edit-split-members-container" class="flex flex-wrap gap-2 p-2 bg-white rounded-lg border border-accent/20"></div>
+                </div>
+            </div>
 
             <input type="hidden" id="acc-edit-id"><input type="hidden" id="acc-edit-old">
             <div class="flex gap-3">
@@ -1184,12 +1158,12 @@
             </div>
 
             <!-- 團體代墊分攤欄位 -->
-			<div id="oc-shared-fields" class="smooth-collapse hidden-animate p-4 bg-accent/5 rounded-xl border border-accent/20 mb-4 space-y-4">
-				<div class="flex flex-col">
-					<span class="text-sm text-accent font-bold mb-2 ml-1">誰先付的錢？</span>
-					<select id="oc-expense-payer" class="p-3 bg-white rounded-lg text-sm outline-none font-bold text-gray-700 border border-accent/20 cursor-pointer min-h-[44px]"></select>
-				</div>
-				<div class="flex flex-col">
+            <div id="oc-shared-fields" class="smooth-collapse hidden-animate p-4 bg-accent/5 rounded-xl border border-accent/20 mb-4 space-y-4">
+                <div class="flex flex-col">
+                    <span class="text-sm text-accent font-bold mb-2 ml-1">誰先付的錢？</span>
+                    <select id="oc-expense-payer" class="p-3 bg-white rounded-lg text-sm outline-none font-bold text-gray-700 border border-accent/20 cursor-pointer min-h-[44px]"></select>
+                </div>
+                <div class="flex flex-col">
 					<div class="flex justify-between items-end mb-2 ml-1">
 						<span class="text-sm text-accent font-bold">有誰要一同付費（分攤）？</span>
 						<div class="flex gap-2">
@@ -1197,20 +1171,9 @@
 							<button type="button" onclick="clearAllSplitMembers('oc')" class="text-[10px] bg-gray-100 text-gray-500 px-2.5 py-1 rounded font-bold border border-gray-200 active:scale-95 transition">僅留自己</button>
 						</div>
 					</div>
-					
-					<!-- ✨ 新增：分攤模式切換按鈕 (oc 專屬) -->
-					<div class="flex bg-gray-100 p-1 rounded-lg mb-2 border border-gray-200">
-						<button type="button" id="btn-mode-equal-oc" onclick="setSplitMode('oc', 'equal')" class="flex-1 py-1.5 text-xs font-bold rounded bg-white text-accent shadow-sm transition">均分 (預設)</button>
-						<button type="button" id="btn-mode-custom-oc" onclick="setSplitMode('oc', 'custom')" class="flex-1 py-1.5 text-xs font-bold rounded text-gray-500 hover:bg-gray-200 transition">按金額</button>
-					</div>
-
-					<!-- 成員名單容器 -->
 					<div id="oc-split-members-container" class="flex flex-wrap gap-2 p-3 bg-white rounded-lg border border-accent/20"></div>
-					
-					<!-- ✨ 新增：防呆核對提示區 (按金額模式下才會顯示) -->
-					<div id="split-validation-oc" class="hidden mt-2 p-2 rounded-lg text-xs font-bold text-center"></div>
 				</div>
-			</div>
+            </div>
 
             <!-- 💡 新增：代購對象欄位 -->
             <div id="oc-proxy-fields" class="smooth-collapse hidden-animate p-4 bg-teal-50/50 rounded-xl border border-teal-100 mb-4">
@@ -5239,15 +5202,9 @@
 
 			let newExpId = Date.now();
 			if (!expensesCache.daily) expensesCache.daily = [];
-            
-            // ✨ 新增：擷取自訂金額資料
-            let savedSplitMode = (expType === 'shared') ? splitMode['oc'] : 'equal';
-            let savedSplitAmounts = (savedSplitMode === 'custom') ? { ...customSplitAmounts['oc'] } : {};
-
 			expensesCache.daily.unshift({
                 id: newExpId, day: targetDay, name: item.name, jpy: jpy, twd: twd, currency: currency, category: expCat, type: expType,
-                payer: finalPayer, splitMembers: splitMembers, memo: item.memo || '', proxyTarget: proxyTarget,
-                splitMode: savedSplitMode, splitAmounts: savedSplitAmounts // ✨ 存入資料庫
+                payer: finalPayer, splitMembers: splitMembers, memo: item.memo || '', proxyTarget: proxyTarget // 確認最後這個是 proxyTarget 變數
             });
             persistExpenses();
 
@@ -6035,16 +5992,8 @@
                         if (item.payer === currentUser) { myShareJpy = item.jpy; myShareTwd = item.twd; } 
                     } else { 
                         if (amIInvolved && !isProxyItem) { 
-                            // ✨ 修改：判斷如果是按金額模式，直接讀取儲存的金額
-                            if (item.splitMode === 'custom' && item.splitAmounts && item.splitAmounts[currentUser] !== undefined) {
-                                myShareTwd = item.splitAmounts[currentUser];
-                                // 日幣依台幣比例換算顯示
-                                myShareJpy = Math.round(item.jpy * (myShareTwd / item.twd)) || 0;
-                            } else {
-                                // 均分模式
-                                myShareJpy = Math.round(item.jpy / count); 
-                                myShareTwd = Math.round(item.twd / count); 
-                            }
+                            myShareJpy = Math.round(item.jpy / count); 
+                            myShareTwd = Math.round(item.twd / count); 
                         } 
                     }
                     
@@ -6220,29 +6169,17 @@
                     }
                 } else if (item.type === 'shared' && !isProxyItem && item.splitMembers) {
                     
-                    totalGroupExpense += item.twd; 
-                    if (balances[item.payer] !== undefined) balances[item.payer] += item.twd;
+                    totalGroupExpense += item.twd; // 累加至所有人的團體總額
                     
-                    // ✨ 修改：逐一計算每個人的分攤額度
-                    item.splitMembers.forEach(m => {
-                        let shareAmount = 0;
-                        if (item.splitMode === 'custom' && item.splitAmounts && item.splitAmounts[m] !== undefined) {
-                            shareAmount = item.splitAmounts[m]; // 使用自訂金額
-                        } else {
-                            shareAmount = Math.round(item.twd / item.splitMembers.length); // 均分模式
-                        }
-
-                        // 如果是當前使用者，加總到他的個人結算分類中
-                        if (m === currentUser) {
-                            myShareTotal += shareAmount;
-                            if (!myShareCats[item.category]) myShareCats[item.category] = { total: 0, items: [] };
-                            myShareCats[item.category].total += shareAmount;
-                            myShareCats[item.category].items.push({ name: item.name, twd: shareAmount });
-                        }
-                        
-                        // 扣除欠款餘額
-                        if (balances[m] !== undefined) balances[m] -= shareAmount; 
-                    });
+                    let shareAmount = Math.round(item.twd / item.splitMembers.length);
+                    if (item.splitMembers.includes(currentUser)) {
+                        myShareTotal += shareAmount;
+                        if (!myShareCats[item.category]) myShareCats[item.category] = { total: 0, items: [] };
+                        myShareCats[item.category].total += shareAmount;
+                        myShareCats[item.category].items.push({ name: item.name, twd: shareAmount });
+                    }
+                    if (balances[item.payer] !== undefined) balances[item.payer] += item.twd;
+                    item.splitMembers.forEach(m => { if (balances[m] !== undefined) balances[m] -= shareAmount; });
                 }
             });
 
@@ -7905,192 +7842,7 @@ function renderTodoList() {
 			}
 		};
 		
-		// ============================================================================
-		// ✨ 團體代墊：按金額分攤功能核心邏輯
-		// ============================================================================
-
-		// 1. 狀態變數：紀錄目前的模式與輸入的金額
-		let splitMode = { standard: 'equal', oc: 'equal', edit: 'equal' }; 
-		let customSplitAmounts = { standard: {}, oc: {}, edit: {} };
-
-		// 2. 切換模式的函式
-		function setSplitMode(type, mode) {
-			splitMode[type] = mode;
-			
-			let btnEqual = document.getElementById(`btn-mode-equal-${type}`);
-			let btnCustom = document.getElementById(`btn-mode-custom-${type}`);
-			let valZone = document.getElementById(`split-validation-${type}`);
-			
-			// 更新按鈕顏色
-			if (mode === 'equal') {
-				if(btnEqual) btnEqual.className = 'flex-1 py-1.5 text-xs font-bold rounded bg-white text-accent shadow-sm transition';
-				if(btnCustom) btnCustom.className = 'flex-1 py-1.5 text-xs font-bold rounded text-gray-500 hover:bg-gray-200 transition';
-				if(valZone) valZone.classList.add('hidden'); // 隱藏防呆提示
-			} else {
-				if(btnCustom) btnCustom.className = 'flex-1 py-1.5 text-xs font-bold rounded bg-white text-accent shadow-sm transition';
-				if(btnEqual) btnEqual.className = 'flex-1 py-1.5 text-xs font-bold rounded text-gray-500 hover:bg-gray-200 transition';
-			}
-			
-			// 重新渲染成員名單 (為了顯示或隱藏輸入框)
-			// 注意：這裡呼叫您原本負責畫出成員標籤的函式
-			if (typeof renderSplitMembers === 'function') {
-				renderSplitMembers(type);
-			}
-			
-			// 如果切換到按金額模式，馬上觸發一次檢核
-			if (mode === 'custom') validateCustomSplit(type);
-		}
-
-		// 3. 記錄使用者輸入的自訂金額，並觸發檢核
-		function updateCustomAmount(type, member, value) {
-			customSplitAmounts[type][member] = parseInt(value) || 0;
-			validateCustomSplit(type);
-		}
-
-		// 4. 防呆核對機制 (核心！)
-		function validateCustomSplit(type) {
-			if (splitMode[type] !== 'custom') return;
-
-			// 抓取目前的總金額 (支援算式解析)
-			let totalInput = '0';
-			let submitBtn = null;
-			
-			if (type === 'oc') {
-				totalInput = document.getElementById('one-click-amount').value;
-				submitBtn = document.querySelector('#one-click-acc-modal .bg-highlight'); // 一鍵記帳的確認按鈕
-			} else if (type === 'standard') {
-				totalInput = document.getElementById('expense-amount').value;
-				submitBtn = document.querySelector('#add-expense-modal .bg-primary'); // 新增記帳的確認按鈕
-			} else if (type === 'edit') {
-				// 編輯模式的台幣欄位 (若空白則抓日幣換算，這裡先簡單抓台幣欄位)
-				totalInput = document.getElementById('acc-edit-twd').value || document.getElementById('acc-edit-amount').value;
-				submitBtn = document.querySelector('#acc-edit-modal .bg-accent');
-			}
-			
-			let totalAmount = parseInt(calculateMathString(totalInput)) || 0; 
-			
-			// 抓取目前有被選取的成員名單 (依照您的變數名稱可能是這些)
-			let activeMembers = (type === 'oc') ? oneClickSplitMembers : (type === 'edit' ? editSplitMembers : standardSplitMembers);
-			
-			// 計算已分配金額總和
-			let currentSum = 0;
-			activeMembers.forEach(m => {
-				currentSum += (customSplitAmounts[type][m] || 0);
-			});
-
-			let valZone = document.getElementById(`split-validation-${type}`);
-			if (!valZone) return;
-			valZone.classList.remove('hidden');
-			
-			// 判斷是否平整，並控制按鈕能否點擊
-			if (currentSum === totalAmount && totalAmount > 0) {
-				valZone.className = 'mt-2 p-2 rounded-lg text-xs font-bold text-center bg-green-100 text-green-700';
-				valZone.innerHTML = `✅ 帳目平整 (已分配 ${currentSum} / 總計 ${totalAmount})`;
-				if(submitBtn) { submitBtn.disabled = false; submitBtn.classList.remove('opacity-50', 'cursor-not-allowed'); }
-			} else {
-				valZone.className = 'mt-2 p-2 rounded-lg text-xs font-bold text-center bg-red-100 text-red-600';
-				valZone.innerHTML = `⚠️ 金額不符 (已分配 <span class="text-lg">${currentSum}</span> / 總計 ${totalAmount})`;
-				if(submitBtn) { submitBtn.disabled = true; submitBtn.classList.add('opacity-50', 'cursor-not-allowed'); }
-			}
-		}
-		// ============================================================================
-		// ✨ 團體代墊：成員選取與畫面渲染邏輯
-		// ============================================================================
-
-			// 1. 宣告儲存各模式「目前被選中成員」的陣列
-			let standardSplitMembers = [];
-			let oneClickSplitMembers = [];
-			let editSplitMembers = [];
-
-			// 2. 點擊單一成員標籤時的切換邏輯
-			function toggleSplitMember(member, type) {
-				let activeMembers = (type === 'oc') ? oneClickSplitMembers : (type === 'edit' ? editSplitMembers : standardSplitMembers);
-				
-				let index = activeMembers.indexOf(member);
-				if (index > -1) {
-					// 如果原本有選，就取消選取
-					activeMembers.splice(index, 1);
-					// 取消選取時，順便把紀錄的自訂金額清掉
-					if (customSplitAmounts[type] && customSplitAmounts[type][member]) {
-						delete customSplitAmounts[type][member];
-					}
-				} else {
-					// 如果原本沒選，就加入選取
-					activeMembers.push(member);
-				}
-				
-				renderSplitMembers(type); // 更新畫面
-				validateCustomSplit(type); // 重新核對總金額
-			}
-
-			// 3. 點擊「全選」按鈕的邏輯
-			function selectAllSplitMembers(type) {
-				// familyMembers 是您原本就在程式最上方定義好的家人名單
-				let activeMembers = [...familyMembers]; 
-				
-				if (type === 'oc') oneClickSplitMembers = activeMembers;
-				else if (type === 'edit') editSplitMembers = activeMembers;
-				else standardSplitMembers = activeMembers;
-				
-				renderSplitMembers(type);
-				validateCustomSplit(type);
-			}
-
-			// 4. 點擊「僅留自己」按鈕的邏輯
-			function clearAllSplitMembers(type) {
-				// currentUser 是您原本記錄目前使用者的變數
-				let activeMembers = currentUser ? [currentUser] : []; 
-				
-				if (type === 'oc') oneClickSplitMembers = activeMembers;
-				else if (type === 'edit') editSplitMembers = activeMembers;
-				else standardSplitMembers = activeMembers;
-				
-				// 清空該模式下的所有自訂金額
-				customSplitAmounts[type] = {};
-				
-				renderSplitMembers(type);
-				validateCustomSplit(type);
-			}
-
-			// 5. 將成員名單與輸入框畫到 HTML 上的核心函式
-			function renderSplitMembers(type) {
-				// 找出對應的 HTML 容器
-				let containerId = type === 'oc' ? 'oc-split-members-container' : (type === 'edit' ? 'edit-split-members-container' : 'split-members-container');
-				let container = document.getElementById(containerId);
-				if (!container) return;
-				
-				// 取得當前模式的成員與分攤模式 (均分 equal / 自訂 custom)
-				let activeMembers = (type === 'oc') ? oneClickSplitMembers : (type === 'edit' ? editSplitMembers : standardSplitMembers);
-				let mode = splitMode[type]; 
-
-				let html = familyMembers.map(m => {
-					let isActive = activeMembers.includes(m);
-					let theme = getMemberColorTheme(m); // 呼叫您原本的顏色函式
-					
-					// 決定標籤的顏色外觀
-					let btnClass = isActive 
-						? `${theme.bg} ${theme.text} ${theme.border} border-2 shadow-sm` 
-						: `bg-gray-50 text-gray-400 border-gray-200 border border-dashed hover:bg-gray-100`;
-
-					// ✨ 關鍵：如果是「按金額」模式且該成員被選取，才生成數字輸入框
-					let inputHtml = (mode === 'custom' && isActive) 
-						? `<input type="number" inputmode="numeric" placeholder="$" value="${customSplitAmounts[type][m] || ''}" 
-							onchange="updateCustomAmount('${type}', '${m}', this.value)" 
-							onkeyup="updateCustomAmount('${type}', '${m}', this.value)" 
-							onclick="event.stopPropagation();" 
-							class="w-16 ml-2 p-1 text-xs border border-white rounded outline-none text-center bg-white/80 text-gray-800 shadow-inner">` 
-						: '';
-
-					// 組合單一成員的 HTML
-					return `
-					<div onclick="toggleSplitMember('${m}', '${type}')" class="cursor-pointer text-xs px-2.5 py-1.5 rounded-lg font-bold transition-all flex items-center ${btnClass}">
-						<i class="fa-solid fa-user mr-1.5 opacity-70"></i>${m}
-						${inputHtml}
-					</div>`;
-				}).join('');
-				
-				container.innerHTML = html;
-			}
+		
 		
     </script>
 	<script>
