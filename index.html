@@ -7302,12 +7302,15 @@
             let data;
             try {
                 data = JSON.parse(localStorage.getItem('trip_todo_dynamic_v5'));
-                // 【防呆】確保資料格式正確
-                if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error("Invalid Data");
+                // 【修復關鍵】：多加一個判斷 `!data["✈️ 機票與住宿"]`
+                // 如果發現快取裡面的資料是空的，或者沒有這個分類，就視為資料不完整，強制拋出錯誤來重置！
+                if (!data || typeof data !== 'object' || Array.isArray(data) || !data["✈️ 機票與住宿"]) {
+                    throw new Error("Invalid or Empty Data");
+                }
             } catch(e) {
-                console.warn("待辦清單資料損毀，重置中...");
-                localStorage.removeItem('trip_todo_dynamic_v5');
-                initTodoData();
+                console.warn("待辦清單資料損毀或為空，強制重置預設值...");
+                localStorage.removeItem('trip_todo_dynamic_v5'); // 刪除舊的空檔案
+                initTodoData(); // 重新寫入您寫好的豐富預設文字
                 data = JSON.parse(localStorage.getItem('trip_todo_dynamic_v5'));
             }
 
@@ -7327,12 +7330,10 @@
                     
                     return `
                     <div class="relative overflow-hidden mb-2 rounded-xl shadow-sm border border-gray-100 ${bgClass}">
-                        <!-- 底層：左滑出現的刪除按鈕 -->
                         <div class="absolute right-0 top-0 bottom-0 w-[70px] flex justify-center items-center px-2 z-0 border-l border-gray-100 bg-gray-100">
                             <button onclick="deleteTodoItem('${category}', ${item.id}); event.stopPropagation();" class="text-gray-500 hover:text-red-500 bg-white w-10 h-10 rounded-full shadow-sm border border-gray-200 flex items-center justify-center active:scale-95 transition"><i class="fa-solid fa-trash-can text-sm"></i></button>
                         </div>
 
-                        <!-- 頂層：純打勾項目 -->
                         <div class="swipe-content relative z-10 w-full p-3 transition-transform duration-300 cursor-pointer flex items-center justify-between ${bgClass}"
                              data-swiped="false"
                              onclick="toggleSwipe(this)"
@@ -7354,7 +7355,6 @@
                     </div>
                     <div class="p-2">
                         ${itemsHtml}
-                        <!-- 💡 已經將下方的「新增事項」文字輸入框與按鈕徹底移除 -->
                     </div>
                 </div>`;
             });
