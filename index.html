@@ -6130,7 +6130,8 @@
 								<div class="w-9 h-9 rounded-full bg-white flex items-center justify-center mr-2.5 shrink-0 border border-gray-200 shadow-sm"><i class="fa-solid ${iconClass} text-xs"></i></div>
 								<div class="min-w-0 flex-1">
 									<div class="flex items-center gap-2">
-										<p class="font-bold text-sm ${nameColor} truncate">${item.name}</p>
+										<!-- ✨ 修正：拿掉 truncate，改用 break-words 與 whitespace-normal，太長時會自動換行 -->
+										<p class="font-bold text-sm ${nameColor} break-words whitespace-normal">${item.name}</p>
 										<span class="text-xs text-gray-400 shrink-0">(${item.category})</span>
 									</div>
 									<div class="flex flex-wrap items-center gap-1.5 mt-0.5">
