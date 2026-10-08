@@ -6109,11 +6109,13 @@
                     let priceHtml = `${amountLabel}<p class="font-bold ${priceColorClass} font-heading text-base">¥ ${displayJpy.toLocaleString()}</p><p class="text-xs text-gray-500 font-bold mt-0.5">NT$ ${displayTwd.toLocaleString()}</p>`;
                     
                     groupHtml += `<li id="expense-${item.id}" class="relative overflow-hidden mb-4 rounded-xl shadow-sm border ${cardBorderClass} bg-white">
+						<!-- 底層：操作按鈕區 (固定在右側，沒滑開時會被頂層完全蓋住) -->
 						<div class="absolute right-0 top-0 bottom-0 w-[100px] flex justify-center items-center gap-2 px-2 z-0 border-l border-gray-200 bg-gray-100">
 							<button onclick="triggerEditExpense(${item.id}); event.stopPropagation();" class="text-gray-500 hover:text-blue-500 bg-white w-10 h-10 rounded-full shadow-sm border border-gray-200 flex items-center justify-center active:scale-95 transition"><i class="fa-solid fa-pen text-sm"></i></button>
 							<button onclick="confirmDeleteExpense(${item.id}); event.stopPropagation();" class="text-gray-500 hover:text-red-500 bg-white w-10 h-10 rounded-full shadow-sm border border-gray-200 flex items-center justify-center active:scale-95 transition"><i class="fa-solid fa-trash-can text-sm"></i></button>
 						</div>
 
+						<!-- 頂層：卡片主要內容 (✨ 加上 relative 與對應的實心背景色，徹底遮蔽底層按鈕) -->
 						<div class="swipe-content relative z-10 w-full transition-transform duration-300 cursor-pointer ${cardBgClass}"
 							 data-swiped="false"
 							 onclick="toggleSwipe(this)"
