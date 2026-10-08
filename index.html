@@ -6036,10 +6036,10 @@
                         grandTotalMyTwd += myShareTwd;
                     }
 
-                    // --- 升級版：根據「記帳性質」決定外框、底色與標籤顏色 ---
+                   // --- 升級版：根據「記帳性質」決定外框、底色與左側色條色彩 ---
                     let typeBadge = ''; 
                     let splitBadge = ''; 
-                    let nameColor = 'text-gray-500'; 
+                    let nameColor = 'text-gray-700'; 
                     let cardBgClass = 'bg-white';
                     let cardBorderClass = 'border-gray-100';
                     let leftBarClass = 'bg-gray-300';
@@ -6047,25 +6047,29 @@
                     let isIncome = (item.jpy < 0 || item.category === '退稅/雜項收入'); 
 
                     if (isIncome) {
-                        leftBarClass = 'bg-green-400';
+                        // 💰 收入/退稅：綠色系
+                        leftBarClass = 'bg-green-500';
                         cardBorderClass = 'border-green-200';
-                        cardBgClass = 'bg-green-50'; 
-                    } else if (!isPersonal && !isProxyItem) { 
+                        cardBgClass = 'bg-green-50/60'; 
+                    } else if (isProxyItem) {
+                        // 🛒 代購：藍綠色系
                         nameColor = 'text-primary'; 
-                        leftBarClass = 'bg-blue-400';
-                        cardBorderClass = 'border-blue-200';
-                        cardBgClass = 'bg-blue-50'; 
-                        typeBadge = `<span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-1 rounded-md font-bold shadow-sm whitespace-nowrap"><i class="fa-solid fa-users mr-1"></i>代墊: ${item.payer}</span>`; 
-						// ✨ 帶有 onclick 的按鈕
-						splitBadge = `<button onclick="showSplitMembers(${item.id}); event.stopPropagation();" class="bg-white text-blue-600 border border-blue-200 text-[10px] px-2 py-1 rounded-md tracking-tighter shadow-sm whitespace-nowrap active:scale-95 transition hover:bg-blue-50 focus:outline-none"><i class="fa-solid fa-users mr-1"></i>分攤: ${count} 人</button>`;
-					} else if (isProxyItem) { 
-                        nameColor = 'text-primary'; 
-                        leftBarClass = 'bg-teal-400';
+                        leftBarClass = 'bg-teal-500';
                         cardBorderClass = 'border-teal-200';
-                        cardBgClass = 'bg-teal-50'; 
+                        cardBgClass = 'bg-teal-50/50'; 
                         typeBadge = `<span class="bg-teal-100 text-teal-700 text-[10px] px-2 py-1 rounded-md font-bold shadow-sm whitespace-nowrap"><i class="fa-solid fa-bag-shopping mr-1"></i>代購: ${item.payer}</span>`; 
+                    } else if (!isPersonal) {
+                        // 👥 團體代墊：亮藍色系 (與個人區隔開來)
+                        nameColor = 'text-primary font-bold'; 
+                        leftBarClass = 'bg-blue-500';
+                        cardBorderClass = 'border-blue-200';
+                        cardBgClass = 'bg-blue-50/50'; 
+                        typeBadge = `<span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-1 rounded-md font-bold shadow-sm whitespace-nowrap"><i class="fa-solid fa-users mr-1"></i>代墊: ${item.payer}</span>`; 
+                        splitBadge = `<button onclick="showSplitMembers(${item.id}); event.stopPropagation();" class="bg-white text-blue-600 border border-blue-200 text-[10px] px-2 py-1 rounded-md tracking-tighter shadow-sm whitespace-nowrap active:scale-95 transition hover:bg-blue-50 focus:outline-none"><i class="fa-solid fa-users mr-1"></i>分攤: ${count} 人</button>`;
                     } else {
+                        // 👤 純個人消費：乾淨的白色系
                         leftBarClass = 'bg-gray-300';
+                        cardBorderClass = 'border-gray-200';
                         cardBgClass = 'bg-white'; 
                     }
                     
