@@ -7322,7 +7322,6 @@
                 let itemsHtml = data[category].map((item) => {
                     
                     let checked = item.checked ? 'checked' : ''; 
-                    // 【對齊打包清單樣式】打勾後會有刪除線與變淡的效果
                     let strike = item.checked ? 'line-through text-teal-600 opacity-70' : 'text-primary font-medium';
                     let bgClass = item.checked ? 'item-completed' : 'bg-white';
                     
@@ -7333,7 +7332,7 @@
                             <button onclick="deleteTodoItem('${category}', ${item.id}); event.stopPropagation();" class="text-gray-500 hover:text-red-500 bg-white w-10 h-10 rounded-full shadow-sm border border-gray-200 flex items-center justify-center active:scale-95 transition"><i class="fa-solid fa-trash-can text-sm"></i></button>
                         </div>
 
-                        <!-- 頂層：項目本體 (完美對齊打包清單的大核取方塊) -->
+                        <!-- 頂層：純打勾項目 -->
                         <div class="swipe-content relative z-10 w-full p-3 transition-transform duration-300 cursor-pointer flex items-center justify-between ${bgClass}"
                              data-swiped="false"
                              onclick="toggleSwipe(this)"
@@ -7355,10 +7354,7 @@
                     </div>
                     <div class="p-2">
                         ${itemsHtml}
-                        <div class="flex items-center gap-3 mt-3 px-2 pb-2 w-full box-border">
-                            <input type="text" id="new-todo-${catIndex}" placeholder="新增事項..." class="flex-1 p-3 text-sm bg-gray-50 rounded-xl border border-gray-200 outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition font-bold text-primary min-h-[44px]">
-                            <button onclick="addTodoItem('${category}', ${catIndex})" class="shrink-0 bg-teal-600 text-white px-4 py-3 text-sm rounded-xl font-bold shadow-sm active:scale-95 transition hover:bg-teal-700 min-h-[44px]"><i class="fa-solid fa-plus"></i></button>
-                        </div>
+                        <!-- 💡 已經將下方的「新增事項」文字輸入框與按鈕徹底移除 -->
                     </div>
                 </div>`;
             });
