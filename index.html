@@ -7183,7 +7183,6 @@
 				// ================= 💡 自動偵測變更並產生修改紀錄 =================
 				let changes = [];
 				let editor = currentUser || '某成員';
-				// 取得簡短時間格式 (例: 12/8 16:30)
 				let nowStr = new Date().toLocaleTimeString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
 				if (item.name !== newName) {
@@ -7192,19 +7191,17 @@
 				if (item.jpy !== newAmt) {
 					changes.push(`將金額從 ¥${item.jpy.toLocaleString()} 改為 ¥${newAmt.toLocaleString()}`);
 				}
-				
-				// 計算新舊匯率來比對
-				let oldRate = (item.jpy && item.jpy !== 0) ? (item.twd / item.jpy).toFixed(4) : null;
-				let newRate = (newAmt && newAmt !== 0) ? (finalTwd / newAmt).toFixed(4) : null;
-				if (oldRate && newRate && oldRate !== newRate) {
-					changes.push(`將匯率從 ${oldRate} 改為 ${newRate}`);
+				if (item.twd !== finalTwd) {
+					changes.push(`將台幣從 NT$ ${item.twd.toLocaleString()} 改為 NT$ ${finalTwd.toLocaleString()}`);
 				}
-				
 				if (item.category !== newCat) {
 					changes.push(`將類別從 ${item.category} 改為 ${newCat}`);
 				}
 				if (item.day !== newDay) {
 					changes.push(`將天數從 Day ${item.day} 改為 Day ${newDay}`);
+				}
+				if (item.memo !== newMemo) {
+					changes.push(`更新了備註`);
 				}
 
 				// 如果有偵測到任何修改，就寫入 editLogs 陣列
