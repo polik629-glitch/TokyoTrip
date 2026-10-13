@@ -5583,7 +5583,22 @@
         }
 
         // 4. 渲染待辦清單 (支援滑動刪除與新版面)
-		function renderTodo() {
+		// 點擊展開/收合任務詳細備註的控制函數
+        function toggleTodoDetail(id, el) {
+            let memoEl = document.getElementById(`todo-memo-box-${id}`);
+            let iconEl = document.getElementById(`todo-chevron-${id}`);
+            if (!memoEl) return;
+            
+            if (memoEl.classList.contains('hidden')) {
+                memoEl.classList.remove('hidden');
+                if (iconEl) iconEl.style.transform = 'rotate(180deg)';
+            } else {
+                memoEl.classList.add('hidden');
+                if (iconEl) iconEl.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function renderTodo() {
             let container = document.getElementById('todo-container');
             if (!container) return;
 
@@ -5594,12 +5609,9 @@
                 return;
             }
 
-            // 排序：未完成在前，已完成在後
             list.sort((a, b) => (a.completed === b.completed) ? 0 : a.completed ? 1 : -1);
 
-            // ✨ 第一步：依照「所屬分類 (category)」進行群組歸納
             let groups = {};
-            // 定義預設的分類排序順序 (讓重要分類排在前面)
             let categoryOrder = ["✈️ 機票與住宿", "🚐 交通", "🏰 景點", "📱 App 與網路", "未分類"];
 
             list.forEach(item => {
@@ -5608,7 +5620,6 @@
                 groups[cat].push(item);
             });
 
-            // 依照我們定義的順序排序分類群組，沒定義的放到後面
             let sortedCategories = Object.keys(groups).sort((a, b) => {
                 let indexA = categoryOrder.indexOf(a);
                 let indexB = categoryOrder.indexOf(b);
@@ -5617,7 +5628,6 @@
                 return indexA - indexB;
             });
 
-            // ✨ 第二步：逐一渲染每一個分類區塊
             let finalHtml = '';
             
             sortedCategories.forEach((catName, groupIdx) => {
@@ -5629,21 +5639,25 @@
                     let textClass = isDone ? 'text-gray-400 line-through' : 'text-primary';
                     
                     let assigneeBadge = '';
-					if (Array.isArray(item.assignee) && item.assignee.length > 0) {
-						assigneeBadge = item.assignee.map(m => {
-							let colorTheme = getMemberColorTheme(m);
-							return `<span class="text-[10px] ${colorTheme.bg} ${colorTheme.text} px-2 py-0.5 rounded shadow-sm font-bold border ${colorTheme.border} shrink-0 mr-1"><i class="fa-solid fa-user mr-1"></i>${m}</span>`;
-						}).join('');
-					} else if (typeof item.assignee === 'string' && item.assignee.trim() !== '') {
-						// 相容舊的單人字串資料
-						let colorTheme = getMemberColorTheme(item.assignee);
-						assigneeBadge = `<span class="text-[10px] ${colorTheme.bg} ${colorTheme.text} px-2 py-0.5 rounded shadow-sm font-bold border ${colorTheme.border} shrink-0"><i class="fa-solid fa-user mr-1"></i>${item.assignee}</span>`;
-					} else {
-						assigneeBadge = ''; // 沒選代表全體，不顯示標籤
-					}
+                    if (item.assignee && Array.isArray(item.assignee) && item.assignee.length > 0) {
+                        assigneeBadge = item.assignee.map(m => {
+                            let colorTheme = getMemberColorTheme(m);
+                            return `<span class="text-[10px] ${colorTheme.bg} ${colorTheme.text} px-2 py-0.5 rounded shadow-sm font-bold border${colorTheme.border} shrink-0 mr-1"><i class="fa-solid fa-user mr-1"></i>${m}</span>`;
+                        }).join('');
+                    }
 
-                    let memoHtml = item.memo ? `<div class="text-xs text-gray-500 mt-1 pl-1 line-clamp-2 leading-relaxed font-medium"><i class="fa-solid fa-note-sticky mr-1 opacity-50 text-[10px]"></i>${item.memo}</div>` : '';
+                    // 判斷是否有備註，如果有，提供展開的小圖示或提示
+                    let hasMemo = item.memo && item.memo.trim() !== '';
+                    let memoPreview = hasMemo ? `<div class="text-xs text-gray-400 mt-1 pl-1 truncate font-medium"><i class="fa-solid fa-note-sticky mr-1 opacity-50 text-[10px]"></i>${item.memo}</div>` : '';
                     
+                    let memoDetailBox = hasMemo ? `
+                        <div id="todo-memo-box-${item.id}" class="hidden mt-2 pt-2 border-t border-gray-100 text-xs text-gray-600 leading-relaxed font-medium whitespace-pre-line bg-gray-50 p-2.5 rounded-lg">
+                            <span class="font-bold text-gray-400 block mb-1">📝 完整備註說明：</span>${item.memo}
+                        </div>
+                    ` : '';
+
+                    let expandIcon = hasMemo ? `<i id="todo-chevron-${item.id}" class="fa-solid fa-chevron-down text-xs text-gray-300 transition-transform duration-300 ml-1"></i>` : '';
+
                     let showTransferBtn = !isDone && item.isExpense !== false;
                     let transferBtn = showTransferBtn ? `
                         <button onclick="transferTodoToAccounting(${item.id}); event.stopPropagation();" class="text-[10px] text-highlight bg-orange-50 px-2.5 py-1.5 rounded-lg font-bold hover:bg-highlight hover:text-white transition active:scale-95 flex items-center border border-orange-200 shadow-sm shrink-0 whitespace-nowrap ml-2">
@@ -5658,7 +5672,8 @@
                             <button onclick="deleteTodo(${item.id}); event.stopPropagation();" class="text-gray-500 hover:text-red-500 bg-white w-10 h-10 rounded-full shadow-sm border border-gray-200 flex items-center justify-center active:scale-95 transition"><i class="fa-solid fa-trash-can text-sm"></i></button>
                         </div>
 
-                        <div class="swipe-content relative z-10 w-full p-3 pl-3.5 transition-transform duration-300 cursor-pointer flex items-start ${bgClass}"
+                        <!-- 點擊卡片本體可展開備註 -->
+                        <div class="swipe-content relative z-10 w-full p-3 pl-3.5 transition-transform duration-300 cursor-pointer flex flex-col ${bgClass}"
                              data-swiped="false"
                              onclick="toggleSwipe(this)"
                              ontouchstart="handleSwipeStart(event)"
@@ -5667,27 +5682,31 @@
                              
                             <div class="absolute left-0 top-0 bottom-0 w-1.5 ${isDone ? 'bg-gray-300' : 'bg-teal-400'}"></div>
                             
-                            <label class="flex items-center h-full mr-3 pt-0.5 cursor-pointer" onclick="event.stopPropagation();">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-teal-500 focus:ring-teal-500 transition-all cursor-pointer" onchange="toggleTodo(${item.id}, this)" ${isDone ? 'checked' : ''}>
-                            </label>
-                            
-                            <div class="flex-1 min-w-0 flex flex-col justify-center">
-                                <div class="flex justify-between items-start gap-2">
-                                    <div class="flex-1 min-w-0 flex flex-col items-start gap-1">
-                                        <div class="flex items-center flex-wrap gap-2 w-full">
-                                            ${assigneeBadge}
-                                            <span class="font-bold text-sm ${textClass} break-words flex-1 leading-snug">${item.name}</span>
+                            <div class="flex items-start justify-between w-full" onclick="${hasMemo ? `toggleTodoDetail(${item.id}, this); event.stopPropagation();` : ''}">
+                                <div class="flex items-center h-full mr-3 pt-0.5 cursor-pointer" onclick="event.stopPropagation();">
+                                    <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-teal-500 focus:ring-teal-500 transition-all cursor-pointer" onchange="toggleTodo(${item.id}, this)" ${isDone ? 'checked' : ''}>
+                                </div>
+                                
+                                <div class="flex-1 min-w-0 flex flex-col justify-center">
+                                    <div class="flex justify-between items-start gap-2">
+                                        <div class="flex-1 min-w-0 flex flex-col items-start gap-1">
+                                            <div class="flex items-center flex-wrap gap-2 w-full">
+                                                ${assigneeBadge}
+                                                <span class="font-bold text-sm ${textClass} break-words flex-1 leading-snug flex items-center">
+                                                    ${item.name} ${expandIcon}
+                                                </span>
+                                            </div>
+                                            ${!document.getElementById(`todo-memo-box-${item.id}`)?.classList.contains('hidden') ? '' : memoPreview}
                                         </div>
-                                        ${memoHtml}
+                                        ${transferBtn}
                                     </div>
-                                    ${transferBtn}
                                 </div>
                             </div>
+                            ${memoDetailBox}
                         </div>
                     </div>`;
                 }).join('');
 
-                // 組合分類標題外框卡片
                 finalHtml += `
                 <div class="mb-4 bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
                     <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex justify-between items-center">
@@ -5704,7 +5723,6 @@
 
             container.innerHTML = finalHtml;
         }
-
         document.addEventListener("DOMContentLoaded", () => {
             if(typeof renderTodo === 'function') renderTodo();
         });
