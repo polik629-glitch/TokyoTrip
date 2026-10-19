@@ -4199,9 +4199,11 @@
                                     <i class="fa-solid fa-chevron-down text-xs text-blue-400 transit-chevron transition-transform duration-300" ${transitIconRot}></i>
                                 </div>
                                 <div id="${spotId}-transit" class="${transitExpanded} smooth-collapse mt-2.5 text-xs text-gray-700 space-y-1.5 border-t border-blue-100/80 pt-2.5">
-                                    ${spot.transit && spot.transit.meeting ? `<div class="flex"><i class="fa-solid fa-location-dot text-highlight mt-0.5 mr-2 w-3.5 text-center"></i><div class="flex-1"><span class="font-bold">集合：</span>${spot.transit.meeting}</div></div>` : ''}
-                                    ${spot.transit && spot.transit.method ? `<div class="flex"><i class="fa-solid fa-train-subway text-accent mt-0.5 mr-2 w-3.5 text-center"></i><div class="flex-1"><span class="font-bold">方式：</span><span class="font-bold text-primary ml-1">${spot.transit.method}</span></div></div>` : ''}
-                                    ${spot.transit && spot.transit.ticket ? `<div class="flex"><i class="fa-solid fa-ticket text-gray-400 mt-0.5 mr-2 w-3.5 text-center"></i><div class="flex-1"><span class="font-bold">票券：</span>${spot.transit.ticket}</div></div>` : ''}
+									${spot.transit && spot.transit.method ? `<div class="flex"><i class="fa-solid fa-train-subway text-accent mt-0.5 mr-2 w-3.5 text-center"></i><div class="flex-1"><span class="font-bold">方式：</span><span class="font-bold text-primary ml-1">${spot.transit.method}</span></div></div>` : ''}
+                                    ${spot.transit && spot.transit.ticket ? `<div class="flex"><i class="fa-solid fa-ticket text-gray-400 mt-0.5 mr-2 w-3.5 text-center"></i><div class="flex-1"><span class="font-bold">票券：</span>
+									${spot.transit.ticket}</div></div>` : ''}${spot.transit && spot.transit.meeting ? `<div class="flex"><i class="fa-solid fa-location-dot text-highlight mt-0.5 mr-2 w-3.5 text-center"></i><div class="flex-1"><span class="font-bold">集合：</span>${spot.transit.meeting}</div></div>` : ''}
+                                   
+                                    
                                     ${mapBtn}
                                 </div>
                             </div>
