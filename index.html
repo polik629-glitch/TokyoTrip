@@ -9052,7 +9052,7 @@
 		];
 
 
-// 渲染優惠券輪播卡片 (恢復即時網頁縮圖預覽，並支援點擊直接開網頁)
+// 渲染優惠券輪播卡片 (支援本機圖庫、雲端圖片、以及穩定的網頁捷徑預覽與直接跳轉)
 		function renderCouponCarousel() {
 			const container = document.getElementById('coupon-carousel-container');
 			if (!container) return;
@@ -9071,33 +9071,41 @@
 				const id = item.id || idx;
 				const name = item.name || item.title || '';
 				const discount = item.discount || '';
-				const cloudUrl = item.img || item.barcodeUrl || '';
+				const cloudUrl = item.img || item.barcodeUrl || item.imgUrl || '';
 				const linkUrl = item.link || item.url || '';
 
+				// 判斷是否有實際圖片或條碼需要檢視
 				const hasRealImg = (item.imageKey && item.imageKey.trim() !== '') || (cloudUrl && cloudUrl.trim() !== '');
 				const hasLink = linkUrl && linkUrl.trim() !== '';
 
 				let imgTag = '';
 				if (item.imageKey) {
-					// 1. 本機資料庫圖片
+					// 1. 本機 IndexedDB 圖片
 					imgTag = `<img data-coupon-key="${item.imageKey}" data-cloud-url="${cloudUrl}" data-link-url="${linkUrl}" src="" class="w-full h-full object-cover coupon-async-img bg-gray-100">`;
 				} else if (cloudUrl && cloudUrl.trim() !== '') {
 					// 2. 雲端圖床圖片
 					imgTag = `<img src="${cloudUrl}" class="w-full h-full object-cover bg-gray-100" onerror="this.onerror=null; this.src='';">`;
 				} else if (hasLink) {
-					// 3. ✨ 恢復網頁即時縮圖預覽 (mshots)
-					const webSnapshotUrl = `https://s0.wordpress.com/mshots/v1/${encodeURIComponent(linkUrl)}?w=400`;
+					// 3. 僅有網址：改用精美且穩定的「視覺化網頁預覽卡片」（不破圖、載入超快）
+					let domain = '官方網站';
+					try {
+						domain = new URL(linkUrl).hostname.replace('www.', '');
+					} catch(e) {}
+
 					imgTag = `
-						<div class="w-full h-full relative overflow-hidden group bg-gray-50">
-							<img src="${webSnapshotUrl}" class="w-full h-full object-cover object-top transition duration-300 group-hover:scale-105" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'w-full h-full bg-gradient-to-br from-teal-50 to-teal-100 flex flex-col items-center justify-center p-2 text-teal-700\\'><i class=\\'fa-solid fa-arrow-up-right-from-square text-lg mb-1 text-teal-500\\'></i><span class=\\'text-[9px] font-bold text-center\\'>開啟網頁</span></div>';">
-							<!-- 右下角小標籤：提示這是網頁縮圖 -->
-							<div class="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-white text-[9px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 shadow-sm">
-								<i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i>網頁
+						<div class="w-full h-full bg-gradient-to-tr from-slate-800 via-teal-900 to-slate-900 flex flex-col items-center justify-center p-2 text-white relative group">
+							<div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mb-1 group-hover:scale-110 transition duration-300">
+								<i class="fa-solid fa-globe text-teal-300 text-sm"></i>
+							</div>
+							<span class="text-[9px] font-bold text-slate-200 truncate w-full px-1 text-center">${domain}</span>
+							<!-- 右下角小標籤 -->
+							<div class="absolute bottom-1 right-1 bg-black/50 backdrop-blur-sm text-teal-300 text-[8px] px-1.5 py-0.5 rounded font-bold flex items-center gap-0.5">
+								<i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i>網頁
 							</div>
 						</div>
 					`;
 				} else {
-					// 4. 兩者皆無時的質感小圖
+					// 4. 兩者皆無時的預設小圖
 					imgTag = `
 						<div class="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center text-gray-400">
 							<i class="fa-solid fa-ticket text-xl mb-1 text-teal-400"></i>
@@ -9106,7 +9114,8 @@
 					`;
 				}
 
-				// 💡 點擊行為維持：有實體圖開大圖，只有網址則直接開新分頁
+				// 💡 點擊行為判斷：
+				// 如果「沒有實體圖片」但「有網址」，點擊直接開新視窗；否則呼叫 openCouponModal 檢視大圖
 				let cardOnClick = `onclick="openCouponModal('${id}')"`;
 				let hintText = discount;
 				
@@ -9129,7 +9138,10 @@
 				`;
 			}).join('');
 
-			loadAsyncCouponImages();
+			// 載入非同步圖片
+			if (typeof loadAsyncCouponImages === 'function') {
+				loadAsyncCouponImages();
+			}
 		}
 
 		
