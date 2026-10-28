@@ -9052,7 +9052,7 @@
 		];
 
 
-// 渲染優惠券輪播卡片 (支援本機圖庫、雲端圖片、以及清爽淺色風格的網頁捷徑預覽)
+// 渲染優惠券輪播卡片 (強制純白與淺灰清爽風格)
 function renderCouponCarousel() {
     const container = document.getElementById('coupon-carousel-container');
     if (!container) return;
@@ -9074,19 +9074,18 @@ function renderCouponCarousel() {
         const cloudUrl = item.img || item.barcodeUrl || item.imgUrl || '';
         const linkUrl = item.link || item.url || '';
 
-        // 判斷是否有實際圖片或條碼需要檢視
         const hasRealImg = (item.imageKey && item.imageKey.trim() !== '') || (cloudUrl && cloudUrl.trim() !== '');
         const hasLink = linkUrl && linkUrl.trim() !== '';
 
         let imgTag = '';
         if (item.imageKey) {
-            // 1. 本機 IndexedDB 圖片
-            imgTag = `<img data-coupon-key="${item.imageKey}" data-cloud-url="${cloudUrl}" data-link-url="${linkUrl}" src="" class="w-full h-full object-cover coupon-async-img bg-gray-100">`;
+            // 1. 本機 IndexedDB 圖片 (強制背景白)
+            imgTag = `<img data-coupon-key="${item.imageKey}" data-cloud-url="${cloudUrl}" data-link-url="${linkUrl}" src="" class="w-full h-full object-cover coupon-async-img bg-white">`;
         } else if (cloudUrl && cloudUrl.trim() !== '') {
-            // 2. 雲端圖床圖片
-            imgTag = `<img src="${cloudUrl}" class="w-full h-full object-cover bg-gray-100" onerror="this.onerror=null; this.src='';">`;
+            // 2. 雲端圖床圖片 (強制背景白)
+            imgTag = `<img src="${cloudUrl}" class="w-full h-full object-cover bg-white" onerror="this.onerror=null; this.src='';">`;
         } else if (hasLink) {
-            // 3. 僅有網址：改為清爽淺色風格的 Google Favicon 官方 Logo 與網域名稱捷徑卡片
+            // 3. 僅有網址：強制淺灰白漸層、絕不出現深色
             let domain = '官方網站';
             let faviconUrl = '';
             try {
@@ -9096,26 +9095,24 @@ function renderCouponCarousel() {
             } catch(e) {}
 
             imgTag = `
-                <div class="w-full h-full bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 flex flex-col items-center justify-center p-2 text-gray-700 relative group border-b border-gray-100">
+                <div class="w-full h-full bg-gray-50 flex flex-col items-center justify-center p-2 text-gray-700 relative group border-b border-gray-100">
                     <img src="${faviconUrl}" class="w-7 h-7 rounded-md bg-white shadow-xs p-1 mb-1 object-contain group-hover:scale-110 transition duration-300" onerror="this.style.display='none'">
                     <span class="text-[9px] font-bold text-gray-800 truncate w-full px-1 text-center">${domain}</span>
-                    <!-- 右下角小標籤 -->
                     <div class="absolute bottom-1 right-1 bg-white/90 backdrop-blur-sm text-teal-600 text-[8px] px-1.5 py-0.5 rounded shadow-xs font-bold flex items-center gap-0.5 border border-gray-200">
                         <i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i>網頁
                     </div>
                 </div>
             `;
         } else {
-            // 4. 兩者皆無時的預設小圖
+            // 4. 預設小圖
             imgTag = `
-                <div class="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center text-gray-400">
+                <div class="w-full h-full bg-gray-50 flex flex-col items-center justify-center text-gray-400">
                     <i class="fa-solid fa-ticket text-xl mb-1 text-teal-400"></i>
                     <span class="text-[9px] font-bold">優惠券條碼</span>
                 </div>
             `;
         }
 
-        // 💡 點擊行為判斷：
         let cardOnClick = `onclick="openCouponModal('${id}')"`;
         let hintText = discount;
         
@@ -9127,10 +9124,10 @@ function renderCouponCarousel() {
 
         return `
             <div class="coupon-card shrink-0 w-36 bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm relative cursor-pointer active:scale-95 transition" ${cardOnClick}>
-                <div class="h-20 w-full overflow-hidden relative">
+                <div class="h-20 w-full overflow-hidden relative bg-white">
                     ${imgTag}
                 </div>
-                <div class="p-2">
+                <div class="p-2 bg-white">
                     <div class="text-xs font-bold text-gray-800 truncate">${name}</div>
                     <div class="text-[10px] text-rose-500 font-medium truncate mt-0.5">${hintText}</div>
                 </div>
@@ -9138,7 +9135,6 @@ function renderCouponCarousel() {
         `;
     }).join('');
 
-    // 載入非同步圖片
     if (typeof loadAsyncCouponImages === 'function') {
         loadAsyncCouponImages();
     }
