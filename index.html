@@ -9110,13 +9110,70 @@ function renderCouponCarousel() {
             imgTag = `
                 <div class="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center text-gray-400">
                     <i class="fa-solid fa-ticket text-xl mb-1 text-teal-400"></i>
+             // 渲染優惠券輪播卡片 (支援本機圖庫、雲端圖片、以及清爽淺色風格的網頁捷徑預覽)
+function renderCouponCarousel() {
+    const container = document.getElementById('coupon-carousel-container');
+    if (!container) return;
+
+    let coupons = [];
+    try {
+        coupons = JSON.parse(localStorage.getItem('trip_coupons_v1')) || [];
+    } catch (e) { coupons = []; }
+
+    if (coupons.length === 0) {
+        container.innerHTML = '<div class="text-xs text-gray-400 p-2">暫無優惠券</div>';
+        return;
+    }
+
+    container.innerHTML = coupons.map((item, idx) => {
+        const id = item.id || idx;
+        const name = item.name || item.title || '';
+        const discount = item.discount || '';
+        const cloudUrl = item.img || item.barcodeUrl || item.imgUrl || '';
+        const linkUrl = item.link || item.url || '';
+
+        // 判斷是否有實際圖片或條碼需要檢視
+        const hasRealImg = (item.imageKey && item.imageKey.trim() !== '') || (cloudUrl && cloudUrl.trim() !== '');
+        const hasLink = linkUrl && linkUrl.trim() !== '';
+
+        let imgTag = '';
+        if (item.imageKey) {
+            // 1. 本機 IndexedDB 圖片
+            imgTag = `<img data-coupon-key="${item.imageKey}" data-cloud-url="${cloudUrl}" data-link-url="${linkUrl}" src="" class="w-full h-full object-cover coupon-async-img bg-gray-100">`;
+        } else if (cloudUrl && cloudUrl.trim() !== '') {
+            // 2. 雲端圖床圖片
+            imgTag = `<img src="${cloudUrl}" class="w-full h-full object-cover bg-gray-100" onerror="this.onerror=null; this.src='';">`;
+        } else if (hasLink) {
+            // 3. 僅有網址：改為清爽淺色風格的 Google Favicon 官方 Logo 與網域名稱捷徑卡片
+            let domain = '官方網站';
+            let faviconUrl = '';
+            try {
+                const urlObj = new URL(linkUrl);
+                domain = urlObj.hostname.replace('www.', '');
+                faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+            } catch(e) {}
+
+            imgTag = `
+                <div class="w-full h-full bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 flex flex-col items-center justify-center p-2 text-gray-700 relative group border-b border-gray-100">
+                    <img src="${faviconUrl}" class="w-7 h-7 rounded-md bg-white shadow-xs p-1 mb-1 object-contain group-hover:scale-110 transition duration-300" onerror="this.style.display='none'">
+                    <span class="text-[9px] font-bold text-gray-800 truncate w-full px-1 text-center">${domain}</span>
+                    <!-- 右下角小標籤 -->
+                    <div class="absolute bottom-1 right-1 bg-white/90 backdrop-blur-sm text-teal-600 text-[8px] px-1.5 py-0.5 rounded shadow-xs font-bold flex items-center gap-0.5 border border-gray-200">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i>網頁
+                    </div>
+                </div>
+            `;
+        } else {
+            // 4. 兩者皆無時的預設小圖
+            imgTag = `
+                <div class="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center text-gray-400">
+                    <i class="fa-solid fa-ticket text-xl mb-1 text-teal-400"></i>
                     <span class="text-[9px] font-bold">優惠券條碼</span>
                 </div>
             `;
         }
 
         // 💡 點擊行為判斷：
-        // 如果「沒有實體圖片」但「有網址」，點擊直接開新視窗；否則呼叫 openCouponModal 檢視大圖
         let cardOnClick = `onclick="openCouponModal('${id}')"`;
         let hintText = discount;
         
