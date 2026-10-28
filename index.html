@@ -9052,7 +9052,7 @@
 		];
 
 
-		// 渲染優惠券輪播卡片 (支援即時網頁縮圖預覽)
+// 渲染優惠券輪播卡片 (支援即時網頁縮圖預覽)
 		function renderCouponCarousel() {
 			const container = document.getElementById('coupon-carousel-container');
 			if (!container) return;
@@ -9074,6 +9074,11 @@
 				const cloudUrl = item.img || item.barcodeUrl || '';
 				const linkUrl = item.link || item.url || '';
 
+				// 💡 判斷是否有圖片（包含 imageKey、雲端圖片網址、或是網頁截圖快照）
+				// 如果有 imageKey 或 cloudUrl，代表有實際的圖片/條碼需要透過 Modal 檢視
+				const hasRealImg = (item.imageKey && item.imageKey.trim() !== '') || (cloudUrl && cloudUrl.trim() !== '');
+				const hasLink = linkUrl && linkUrl.trim() !== '';
+
 				let imgTag = '';
 				if (item.imageKey) {
 					// 1. 本機資料庫圖片 (若換設備則備援吃 cloudUrl 或網頁縮圖)
@@ -9081,7 +9086,7 @@
 				} else if (cloudUrl && cloudUrl.trim() !== '') {
 					// 2. 雲端圖床圖片
 					imgTag = `<img src="${cloudUrl}" class="w-full h-full object-cover bg-gray-100" onerror="this.onerror=null; this.src='https://s0.wordpress.com/mshots/v1/${encodeURIComponent(linkUrl)}?w=400';">`;
-				} else if (linkUrl && linkUrl.trim() !== '') {
+				} else if (hasLink) {
 					// 3. ✨ 僅有網址：自動抓取該網頁的真實即時截圖縮圖！
 					const webSnapshotUrl = `https://s0.wordpress.com/mshots/v1/${encodeURIComponent(linkUrl)}?w=400`;
 					imgTag = `
@@ -9103,22 +9108,33 @@
 					`;
 				}
 
+				// 💡 核心修改：動態決定點擊行為
+				// 如果「沒有實體圖片/條碼」但「有網址」，點擊就直接以新視窗開啟該網址；否則開啟 Modal 看大圖/條碼
+				let cardOnClick = `onclick="openCouponModal('${id}')"`;
+				let hintText = discount;
+				
+				if (!hasRealImg && hasLink) {
+					// 安全跳脫網址內的單引號，避免 JS 語法崩潰
+					const safeLinkUrl = linkUrl.replace(/'/g, "\\'");
+					cardOnClick = `onclick="window.open('${safeLinkUrl}', '_blank');"`;
+					hintText = `<span class="text-teal-600 font-bold flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>點擊前往網頁</span>`;
+				}
+
 				return `
-					<div class="coupon-card shrink-0 w-36 bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm relative cursor-pointer" onclick="openCouponModal('${id}')">
+					<div class="coupon-card shrink-0 w-36 bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm relative cursor-pointer active:scale-95 transition" ${cardOnClick}>
 						<div class="h-20 w-full overflow-hidden relative">
 							${imgTag}
 						</div>
 						<div class="p-2">
 							<div class="text-xs font-bold text-gray-800 truncate">${name}</div>
-							<div class="text-[10px] text-rose-500 font-medium truncate mt-0.5">${discount}</div>
+							<div class="text-[10px] text-rose-500 font-medium truncate mt-0.5">${hintText}</div>
 						</div>
 					</div>
 				`;
 			}).join('');
 
 			loadAsyncCouponImages();
-		}
-		
+		}		
 		// ✨ 非同步載入優惠券圖片
 		function loadAsyncCouponImages() {
 			if (typeof getImageFromDB !== 'function') return;
