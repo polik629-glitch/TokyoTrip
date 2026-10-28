@@ -9381,13 +9381,16 @@
 		}
 
 
-		// 開啟全螢幕放大檢視
+	// 開啟全螢幕放大檢視
 		function openCouponZoomModal(imageUrl) {
 			const modal = document.getElementById('coupon-zoom-modal');
 			const img = document.getElementById('coupon-zoom-img');
 			if (!modal || !img) return;
 
+			// 先清空再賦值，強制瀏覽器重新載入並渲染圖片
+			img.src = '';
 			img.src = imageUrl;
+
 			modal.classList.remove('hidden');
 			document.body.style.overflow = 'hidden'; // 防止底層網頁滑動
 		}
@@ -9395,10 +9398,16 @@
 		// 關閉全螢幕檢視
 		function closeCouponZoomModal() {
 			const modal = document.getElementById('coupon-zoom-modal');
+			const img = document.getElementById('coupon-zoom-img');
 			if (!modal) return;
 
 			modal.classList.add('hidden');
 			document.body.style.overflow = '';
+
+			// 💡 關鍵：關閉時清空圖片來源，避免下次點擊相同圖片時快取或狀態卡住
+			if (img) {
+				img.src = '';
+			}
 		}
 
 		function initCouponData() {
