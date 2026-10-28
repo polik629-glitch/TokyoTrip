@@ -9052,97 +9052,98 @@
 		];
 
 
-// 渲染優惠券輪播卡片 (支援本機圖庫、雲端圖片、以及穩定的網頁捷徑預覽與直接跳轉)
-		function renderCouponCarousel() {
-			const container = document.getElementById('coupon-carousel-container');
-			if (!container) return;
+// 渲染優惠券輪播卡片 (支援本機圖庫、雲端圖片、以及帶有 Google Favicon 官方 Logo 的網頁捷徑預覽)
+function renderCouponCarousel() {
+    const container = document.getElementById('coupon-carousel-container');
+    if (!container) return;
 
-			let coupons = [];
-			try {
-				coupons = JSON.parse(localStorage.getItem('trip_coupons_v1')) || [];
-			} catch (e) { coupons = []; }
+    let coupons = [];
+    try {
+        coupons = JSON.parse(localStorage.getItem('trip_coupons_v1')) || [];
+    } catch (e) { coupons = []; }
 
-			if (coupons.length === 0) {
-				container.innerHTML = '<div class="text-xs text-gray-400 p-2">暫無優惠券</div>';
-				return;
-			}
+    if (coupons.length === 0) {
+        container.innerHTML = '<div class="text-xs text-gray-400 p-2">暫無優惠券</div>';
+        return;
+    }
 
-			container.innerHTML = coupons.map((item, idx) => {
-				const id = item.id || idx;
-				const name = item.name || item.title || '';
-				const discount = item.discount || '';
-				const cloudUrl = item.img || item.barcodeUrl || item.imgUrl || '';
-				const linkUrl = item.link || item.url || '';
+    container.innerHTML = coupons.map((item, idx) => {
+        const id = item.id || idx;
+        const name = item.name || item.title || '';
+        const discount = item.discount || '';
+        const cloudUrl = item.img || item.barcodeUrl || item.imgUrl || '';
+        const linkUrl = item.link || item.url || '';
 
-				// 判斷是否有實際圖片或條碼需要檢視
-				const hasRealImg = (item.imageKey && item.imageKey.trim() !== '') || (cloudUrl && cloudUrl.trim() !== '');
-				const hasLink = linkUrl && linkUrl.trim() !== '';
+        // 判斷是否有實際圖片或條碼需要檢視
+        const hasRealImg = (item.imageKey && item.imageKey.trim() !== '') || (cloudUrl && cloudUrl.trim() !== '');
+        const hasLink = linkUrl && linkUrl.trim() !== '';
 
-				let imgTag = '';
-				if (item.imageKey) {
-					// 1. 本機 IndexedDB 圖片
-					imgTag = `<img data-coupon-key="${item.imageKey}" data-cloud-url="${cloudUrl}" data-link-url="${linkUrl}" src="" class="w-full h-full object-cover coupon-async-img bg-gray-100">`;
-				} else if (cloudUrl && cloudUrl.trim() !== '') {
-					// 2. 雲端圖床圖片
-					imgTag = `<img src="${cloudUrl}" class="w-full h-full object-cover bg-gray-100" onerror="this.onerror=null; this.src='';">`;
-				} else if (hasLink) {
-					// 3. 僅有網址：改用精美且穩定的「視覺化網頁預覽卡片」（不破圖、載入超快）
-					let domain = '官方網站';
-					try {
-						domain = new URL(linkUrl).hostname.replace('www.', '');
-					} catch(e) {}
+        let imgTag = '';
+        if (item.imageKey) {
+            // 1. 本機 IndexedDB 圖片
+            imgTag = `<img data-coupon-key="${item.imageKey}" data-cloud-url="${cloudUrl}" data-link-url="${linkUrl}" src="" class="w-full h-full object-cover coupon-async-img bg-gray-100">`;
+        } else if (cloudUrl && cloudUrl.trim() !== '') {
+            // 2. 雲端圖床圖片
+            imgTag = `<img src="${cloudUrl}" class="w-full h-full object-cover bg-gray-100" onerror="this.onerror=null; this.src='';">`;
+        } else if (hasLink) {
+            // 3. 僅有網址：自動抓取 Google Favicon 官方 Logo 與網域名稱捷徑卡片
+            let domain = '官方網站';
+            let faviconUrl = '';
+            try {
+                const urlObj = new URL(linkUrl);
+                domain = urlObj.hostname.replace('www.', '');
+                faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+            } catch(e) {}
 
-					imgTag = `
-						<div class="w-full h-full bg-gradient-to-tr from-slate-800 via-teal-900 to-slate-900 flex flex-col items-center justify-center p-2 text-white relative group">
-							<div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mb-1 group-hover:scale-110 transition duration-300">
-								<i class="fa-solid fa-globe text-teal-300 text-sm"></i>
-							</div>
-							<span class="text-[9px] font-bold text-slate-200 truncate w-full px-1 text-center">${domain}</span>
-							<!-- 右下角小標籤 -->
-							<div class="absolute bottom-1 right-1 bg-black/50 backdrop-blur-sm text-teal-300 text-[8px] px-1.5 py-0.5 rounded font-bold flex items-center gap-0.5">
-								<i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i>網頁
-							</div>
-						</div>
-					`;
-				} else {
-					// 4. 兩者皆無時的預設小圖
-					imgTag = `
-						<div class="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center text-gray-400">
-							<i class="fa-solid fa-ticket text-xl mb-1 text-teal-400"></i>
-							<span class="text-[9px] font-bold">優惠券條碼</span>
-						</div>
-					`;
-				}
+            imgTag = `
+                <div class="w-full h-full bg-gradient-to-tr from-slate-800 via-teal-900 to-slate-900 flex flex-col items-center justify-center p-2 text-white relative group">
+                    <img src="${faviconUrl}" class="w-7 h-7 rounded-md bg-white/10 p-1 mb-1 object-contain group-hover:scale-110 transition duration-300" onerror="this.style.display='none'">
+                    <span class="text-[9px] font-bold text-slate-200 truncate w-full px-1 text-center">${domain}</span>
+                    <!-- 右下角小標籤 -->
+                    <div class="absolute bottom-1 right-1 bg-black/50 backdrop-blur-sm text-teal-300 text-[8px] px-1.5 py-0.5 rounded font-bold flex items-center gap-0.5">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i>網頁
+                    </div>
+                </div>
+            `;
+        } else {
+            // 4. 兩者皆無時的預設小圖
+            imgTag = `
+                <div class="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center text-gray-400">
+                    <i class="fa-solid fa-ticket text-xl mb-1 text-teal-400"></i>
+                    <span class="text-[9px] font-bold">優惠券條碼</span>
+                </div>
+            `;
+        }
 
-				// 💡 點擊行為判斷：
-				// 如果「沒有實體圖片」但「有網址」，點擊直接開新視窗；否則呼叫 openCouponModal 檢視大圖
-				let cardOnClick = `onclick="openCouponModal('${id}')"`;
-				let hintText = discount;
-				
-				if (!hasRealImg && hasLink) {
-					const safeLinkUrl = linkUrl.replace(/'/g, "\\'");
-					cardOnClick = `onclick="window.open('${safeLinkUrl}', '_blank');"`;
-					hintText = `<span class="text-teal-600 font-bold flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>點擊前往網頁</span>`;
-				}
+        // 💡 點擊行為判斷：
+        // 如果「沒有實體圖片」但「有網址」，點擊直接開新視窗；否則呼叫 openCouponModal 檢視大圖
+        let cardOnClick = `onclick="openCouponModal('${id}')"`;
+        let hintText = discount;
+        
+        if (!hasRealImg && hasLink) {
+            const safeLinkUrl = linkUrl.replace(/'/g, "\\'");
+            cardOnClick = `onclick="window.open('${safeLinkUrl}', '_blank');"`;
+            hintText = `<span class="text-teal-600 font-bold flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>點擊前往網頁</span>`;
+        }
 
-				return `
-					<div class="coupon-card shrink-0 w-36 bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm relative cursor-pointer active:scale-95 transition" ${cardOnClick}>
-						<div class="h-20 w-full overflow-hidden relative">
-							${imgTag}
-						</div>
-						<div class="p-2">
-							<div class="text-xs font-bold text-gray-800 truncate">${name}</div>
-							<div class="text-[10px] text-rose-500 font-medium truncate mt-0.5">${hintText}</div>
-						</div>
-					</div>
-				`;
-			}).join('');
+        return `
+            <div class="coupon-card shrink-0 w-36 bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm relative cursor-pointer active:scale-95 transition" ${cardOnClick}>
+                <div class="h-20 w-full overflow-hidden relative">
+                    ${imgTag}
+                </div>
+                <div class="p-2">
+                    <div class="text-xs font-bold text-gray-800 truncate">${name}</div>
+                    <div class="text-[10px] text-rose-500 font-medium truncate mt-0.5">${hintText}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
 
-			// 載入非同步圖片
-			if (typeof loadAsyncCouponImages === 'function') {
-				loadAsyncCouponImages();
-			}
-		}
+    // 載入非同步圖片
+    if (typeof loadAsyncCouponImages === 'function') {
+        loadAsyncCouponImages();
+    }
+}
 
 		
 		// ✨ 非同步載入優惠券圖片
