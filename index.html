@@ -4975,14 +4975,16 @@
                                         </div>
 
                                         <div id="${spotId}-desc" class="${descExpanded} smooth-collapse px-4 pb-4 bg-white text-sm">
-                                            <div class="text-gray-600 leading-relaxed font-medium pt-2 border-t border-gray-50 whitespace-pre-line">${spot.desc}</div>
-                                            ${ticketBtnHtml}
-                                            ${splitsHtml}
-                                            ${storesHtml}
-                                            ${tipsHtml}
-                                            ${imgHtml}
-                                            ${bottomContent}
-                                        </div>
+		                                    <!-- 🌟 讓行程主圖片優先顯示在內文上方 -->
+		                                    ${imgHtml ? `<div class="pt-2 pb-2">${imgHtml}</div>` : ''}
+		                                    
+		                                    <div class="text-gray-600 leading-relaxed font-medium pt-2 border-t border-gray-50 whitespace-pre-line">${spot.desc}</div>
+		                                    ${ticketBtnHtml}
+		                                    ${splitsHtml}
+		                                    ${storesHtml}
+		                                    ${tipsHtml}
+		                                    ${bottomContent}
+		                                </div>
                                         ${editControls}
                                     </div>
                                 </div>
