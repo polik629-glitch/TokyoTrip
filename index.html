@@ -5140,7 +5140,7 @@
 				if (spot && Array.isArray(spot.tips) && spot.tips.length > 0) {
 					spot.tips.forEach((t, tIdx) => {
 						// 替每個 tip 產生一個穩定且唯一的 rowId
-						let tipIndex = `tip_row_${tIdx}_${Date.now()}`;
+						let tipIndex = `tip_row_${tIdx}_${Math.random().toString(36).substring(2, 7)}`;
 						
 						let tImages = [];
 						if (t.images && Array.isArray(t.images)) {
