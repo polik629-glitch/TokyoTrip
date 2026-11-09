@@ -10602,44 +10602,50 @@ function renderCouponCarousel() {
 			reader.readAsDataURL(file);
 		}
 
-		// ✨ 強化版：收集表單中的所有攻略資料（具備自動 DOM 救援防呆，絕不丟失圖片）
+		// ✨ 最終強效版：確保儲存行程節點時，絕對不會漏掉攻略的多張圖片
 		function getSpotTipsFromInputs() {
 			const rows = document.querySelectorAll('.spot-tip-row');
 			const list = [];
+			
 			rows.forEach(r => {
-				const rowId = r.id;
+				const rowId = r.id; // 這就是我們剛剛用的 tip_row_...
 				const desc = (r.querySelector('.tip-desc')?.value || '').trim();
 				
-				// 1. 優先從 window.tipModalImagesMap 抓取該筆攻略的多圖陣列
-				let images = (window.tipModalImagesMap && window.tipModalImagesMap[rowId]) ? [...window.tipModalImagesMap[rowId]] : [];
-				
-				// 2. 🛡️ 關鍵防呆救援：如果 map 裡面剛好沒有（例如編輯視窗初始化時漏帶入），
-				// 直接從該行畫面上已經渲染出來的圖片縮圖 DOM 元素中撈回來！
+				let images = [];
+
+				// 1. 優先從全域對應表 window.tipModalImagesMap 抓取該列的多圖陣列
+				if (window.tipModalImagesMap && window.tipModalImagesMap[rowId] && Array.isArray(window.tipModalImagesMap[rowId])) {
+					images = JSON.parse(JSON.stringify(window.tipModalImagesMap[rowId]));
+				}
+
+				// 2. 🛡️ 雙重防呆：如果 map 裡面剛好抓不到，直接從該行畫面上已渲染的預覽圖 DOM 元素撈回來！
 				if (images.length === 0) {
-					const thumbImgs = r.querySelectorAll('img[data-tip-img], .tip-modal-thumb'); 
-					thumbImgs.forEach(img => {
-						let cUrl = img.dataset.cloudUrl || (img.src.startsWith('http') ? img.src : '');
-						let bPrev = img.dataset.base64 || img.src;
-						if (bPrev) {
-							images.push({ cloudUrl: cUrl, base64Preview: bPrev });
+					const imgEls = r.querySelectorAll('img');
+					imgEls.forEach(img => {
+						let cloudUrl = img.dataset.cloudUrl || (img.src.startsWith('http') ? img.src : '');
+						let base64 = img.dataset.base64 || (img.src.startsWith('data:') ? img.src : '');
+						if (cloudUrl || base64) {
+							images.push({ cloudUrl: cloudUrl, base64Preview: base64 });
 						}
 					});
 				}
-				
-				// 3. 如果還是沒有，檢查舊版的單張圖片輸入框
+
+				// 3. 檢查舊版單圖輸入框
 				const singleImgUrl = (r.querySelector('.tip-img-url')?.value || '').trim();
 				if (images.length === 0 && singleImgUrl) {
 					images = [{ cloudUrl: singleImgUrl, base64Preview: singleImgUrl }];
 				}
 
+				// 只要有文字或有圖片，就成功收錄！
 				if (desc || images.length > 0) {
 					list.push({
 						desc: desc,
-						images: images, // ✨ 完整保存多圖陣列
+						images: images, // 完整保存多圖陣列
 						imgUrl: images.length > 0 ? (images[0].cloudUrl || images[0].base64Preview || '') : ''
 					});
 				}
 			});
+
 			return list;
 		}
 		
