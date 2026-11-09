@@ -7019,13 +7019,7 @@ console.table(list.map(i => ({ id: i.id, name: i.name, imagesCount: (i.images ||
 					}];
 				}
 				
-				let seenUrls = new Set();
-				currentImages = currentImages.filter(img => {
-					let url = typeof img === 'string' ? img : (img.cloudUrl || img.base64Preview || img.imageKey || '');
-					if (!url || seenUrls.has(url)) return false;
-					seenUrls.add(url);
-					return true;
-				});
+				
 
 				// 💡 關鍵快取：將每一項目的完整圖片陣列存入全域對照表
 				if (!window.shopItemImagesMap) window.shopItemImagesMap = {};
