@@ -7464,8 +7464,6 @@
 			if (!files || files.length === 0) return;
 
 			showToast('📸 正在處理攻略圖片...');
-			
-			// 🛡️ 防呆：確保全域對應表存在
 			if (typeof window.tipModalImagesMap === 'undefined') window.tipModalImagesMap = {};
 			if (!window.tipModalImagesMap[tipIndex]) window.tipModalImagesMap[tipIndex] = [];
 
@@ -7473,11 +7471,16 @@
 				try {
 					const imageKey = `tip_img_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 					
-					// 🛡️ 獨立包覆 IndexedDB，避免手機儲存失敗中斷流程
+					// 🛡️ 關鍵防呆：將 IndexedDB 存取包在 try...catch 內，避免手機瀏覽器阻擋或失敗導致整個上傳中斷！
 					if (typeof saveImageToDB === 'function') {
-						try { await saveImageToDB(imageKey, file); } catch (e) { console.warn("DB 儲存失敗", e); }
+						try {
+							await saveImageToDB(imageKey, file);
+						} catch (dbErr) {
+							console.warn("手機端 IndexedDB 寫入略過：", dbErr);
+						}
 					}
 
+					// 讀取並壓縮圖片
 					const base64Data = await new Promise((resolve) => {
 						const reader = new FileReader();
 						reader.onload = function(evt) {
@@ -7486,7 +7489,7 @@
 								const canvas = document.createElement('canvas');
 								const ctx = canvas.getContext('2d');
 								let targetWidth = img.width; let targetHeight = img.height;
-								const MAX_SIZE = 800; // 限制最大尺寸以防手機記憶體爆炸
+								const MAX_SIZE = 800; // 限制大小以防手機記憶體爆炸
 								if (targetWidth > MAX_SIZE || targetHeight > MAX_SIZE) {
 									if (targetWidth > targetHeight) { targetHeight = Math.round(targetHeight * (MAX_SIZE / targetWidth)); targetWidth = MAX_SIZE; } 
 									else { targetWidth = Math.round(targetWidth * (MAX_SIZE / targetHeight)); targetHeight = MAX_SIZE; }
@@ -7495,7 +7498,7 @@
 								ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
 								resolve(canvas.toDataURL('image/jpeg', 0.8));
 							};
-							img.onerror = () => resolve(evt.target.result); // 萬一解析失敗直接用原圖
+							img.onerror = () => resolve(evt.target.result);
 							img.src = evt.target.result;
 						};
 						reader.onerror = () => resolve('');
@@ -7503,18 +7506,17 @@
 					});
 
 					if (!base64Data) continue;
-					
+
 					let cloudUrl = '';
-					// 🛡️ 獨立包覆雲端圖床，手機網路不好時允許失敗並退回使用本機 Base64
 					if (typeof uploadToImgBB === 'function') {
 						try {
 							cloudUrl = await uploadToImgBB(base64Data) || '';
-						} catch (err) {
-							console.warn("手機上傳雲端圖床逾時或失敗，改用本機預覽", err);
+						} catch (cloudErr) {
+							console.warn("雲端圖床上傳略過，改用本機預覽", cloudErr);
 						}
 					}
 
-					// 統一名稱指向 window 全域對應表
+					// 將圖片推入全域 Map
 					window.tipModalImagesMap[tipIndex].push({ imageKey, cloudUrl, base64Preview: base64Data });
 
 				} catch (err) {
@@ -7522,7 +7524,7 @@
 				}
 			}
 
-			// 💡 無論如何，最後一定強制刷新縮圖與清除 input
+			// 💡 無論如何，最後一定強制刷新縮圖！
 			renderTipImagePreviews(tipIndex);
 			showToast('✨ 圖片處理完成！');
 			event.target.value = '';
