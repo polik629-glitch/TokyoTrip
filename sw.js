@@ -1,18 +1,17 @@
-const CACHE_NAME = 'tokyo-trip-cache-v3'; // 💡 升級版本號，強制觸發更新
+const CACHE_NAME = 'tokyo-trip-cache-v4'; // 💡 升級版本號至 v4，切換為秒開策略
 
-// 💡 只快取本機核心檔案
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json'
 ];
 
-// 安裝 Service Worker 並快取本機檔案
+// 安裝 Service Worker 並快取本機核心檔案
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
-      .then(() => self.skipWaiting()) // 立即跳過等待，強制接管
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -28,15 +27,15 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    }).then(() => self.clients.claim()) // 立即控制現有分頁
+    }).then(() => self.clients.claim())
   );
 });
 
-// 攔截網路請求：改為「網路優先 (Network First)」
+// 攔截網路請求：改為「快取秒開 ＋ 背景靜默更新 (Stale-While-Revalidate)」
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // 1. 外部 CDN 或 API 直接放行，不走快取
+  // 1. 外部 CDN、圖片與 GitHub API 直接放行，不干擾正常請求
   if (url.hostname.includes('tailwindcss.com') || 
       url.hostname.includes('cdnjs.cloudflare.com') || 
       url.hostname.includes('api.github.com') || 
@@ -45,22 +44,25 @@ self.addEventListener('fetch', event => {
     return; 
   }
 
-  // 2. 本機網頁檔案改採「網路優先」策略！
+  // 2. 本機核心檔案：有快取先秒開，同時在背景抓最新檔案覆蓋快取
   event.respondWith(
-    fetch(event.request)
-      .then(networkResponse => {
-        // 連線正常：更新快取並回傳最新檔案
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseClone);
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.match(event.request).then(cachedResponse => {
+        // 發起背景網路請求，抓到新檔案就默默更新快取
+        const fetchPromise = fetch(event.request)
+          .then(networkResponse => {
+            if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+              cache.put(event.request, networkResponse.clone());
+            }
+            return networkResponse;
+          })
+          .catch(() => {
+            // 斷網時安靜失敗即可，不影響已顯示的快取畫面
           });
-        }
-        return networkResponse;
-      })
-      .catch(() => {
-        // 斷網或離線時：退回使用快取備援
-        return caches.match(event.request);
-      })
+
+        // ✨ 關鍵：只要快取有檔案，立刻秒回傳（0延遲）；若完全沒快取才等網路
+        return cachedResponse || fetchPromise;
+      });
+    })
   );
 });
