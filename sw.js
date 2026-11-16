@@ -1,21 +1,22 @@
-const CACHE_NAME = 'tokyo-trip-cache-v4'; // 💡 升級版本號至 v4，切換為秒開策略
+const CACHE_NAME = 'tokyo-trip-cache-v4'; // 💡 版本號 v4：Stale-While-Revalidate 秒開＋外部框架本地快取
 
+// 本機核心檔案清單
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json'
 ];
 
-// 安裝 Service Worker 並快取本機核心檔案
+// 1. 安裝 Service Worker 並預先快取核心檔案
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
-      .then(() => self.skipWaiting())
+      .then(() => self.skipWaiting()) // 立即跳過等待，強制接管
   );
 });
 
-// 啟動並清理舊快取
+// 2. 啟動並自動清理舊版快取（如 v1, v2, v3）
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -27,40 +28,42 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    }).then(() => self.clients.claim())
+    }).then(() => self.clients.claim()) // 立即控制現有所有分頁
   );
 });
 
-// 攔截網路請求：改為「快取秒開 ＋ 背景靜默更新 (Stale-While-Revalidate)」
+// 3. 攔截網路請求：「快取秒開 ＋ 背景靜默更新」
 self.addEventListener('fetch', event => {
+  // 僅處理 GET 請求，避免干擾資料寫入或上傳
+  if (event.request.method !== 'GET') return;
+
   const url = new URL(event.request.url);
 
-  // 1. 外部 CDN、圖片與 GitHub API 直接放行，不干擾正常請求
-  if (url.hostname.includes('tailwindcss.com') || 
-      url.hostname.includes('cdnjs.cloudflare.com') || 
-      url.hostname.includes('api.github.com') || 
+  // 動態資料 API 與外部圖床直接走網路，不進靜態快取
+  if (url.hostname.includes('api.github.com') || 
       url.hostname.includes('imgbb.com') ||
       url.hostname.includes('ibb.co')) {
     return; 
   }
 
-  // 2. 本機核心檔案：有快取先秒開，同時在背景抓最新檔案覆蓋快取
+  // 本機檔案與外部樣式框架（Tailwind CSS、FontAwesome）：有快取直接秒開，同時在背景抓新版覆蓋
   event.respondWith(
     caches.open(CACHE_NAME).then(cache => {
       return cache.match(event.request).then(cachedResponse => {
-        // 發起背景網路請求，抓到新檔案就默默更新快取
         const fetchPromise = fetch(event.request)
           .then(networkResponse => {
-            if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+            // 僅快取成功的回應（包含同源 basic 與跨域安全腳本 cors）
+            if (networkResponse && networkResponse.status === 200 && 
+               (networkResponse.type === 'basic' || networkResponse.type === 'cors')) {
               cache.put(event.request, networkResponse.clone());
             }
             return networkResponse;
           })
           .catch(() => {
-            // 斷網時安靜失敗即可，不影響已顯示的快取畫面
+            // 斷網或國外訊號極差時安靜略過，確保已載入的快取畫面正常運作
           });
 
-        // ✨ 關鍵：只要快取有檔案，立刻秒回傳（0延遲）；若完全沒快取才等網路
+        // ✨ 關鍵：快取存在時 0 毫秒直接回傳；完全沒快取才等待網路下載
         return cachedResponse || fetchPromise;
       });
     })
