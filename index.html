@@ -2799,19 +2799,32 @@
 				// 4. 背景靜默預載：將家人共用的圖片下載存進本機 IndexedDB，確保出國斷網也能秒開
 				(async () => {
 					for (const doc of incomingSharedVault) {
-						if (!doc.cloudUrl || !doc.imageKey) continue;
+						if (!doc || !doc.imageKey) continue;
 						const existingBlob = await safeDbGet(doc.imageKey);
-						if (!existingBlob) {
+						if (existingBlob) continue;
+
+						// 若資料本身有帶 base64Preview，可直接轉 Blob 存進本機，不依賴外部 fetch
+						if (doc.base64Preview && typeof doc.base64Preview === 'string' && doc.base64Preview.startsWith('data:')) {
 							try {
-								const res = await fetch(doc.cloudUrl);
-								if (res.ok) {
-									const blob = await res.blob();
-									await saveImageToDB(doc.imageKey, blob);
-									console.log(`📥 已背景離線快取共用文件：${doc.name}`);
+								const b64Res = await fetch(doc.base64Preview);
+								if (b64Res.ok) {
+									const b64Blob = await b64Res.blob();
+									await saveImageToDB(doc.imageKey, b64Blob);
+									continue;
 								}
-							} catch (err) {
-								console.warn(`⚠️ 共用文件背景快取失敗 (${doc.name}):`, err);
+							} catch (_) {}
+						}
+
+						if (!doc.cloudUrl) continue;
+						try {
+							const res = await fetch(doc.cloudUrl, { mode: 'cors' });
+							if (res.ok) {
+								const blob = await res.blob();
+								await saveImageToDB(doc.imageKey, blob);
+								console.log(`📥 已背景離線快取共用文件：${doc.name}`);
 							}
+						} catch (_) {
+							// 外部圖床若因 CORS 或失效無法抓 Blob，靜默略過，不干擾主控台
 						}
 					}
 				})();
