@@ -5009,7 +5009,17 @@
                                                 <span class="text-sm font-bold ${nameClass} break-words whitespace-normal leading-snug">${safeName}</span>
                                             </div>
                                             <!-- 自動帶出輸入的店鋪或地點標籤 -->
-                                            ${(item.storeName && item.storeName !== itinerarySpotName) ? `<div class="mt-0.5"><span class="text-[10px] text-gray-500 font-medium px-1.5 py-0.5 border border-gray-200 rounded bg-white inline-flex items-center"><i class="fa-solid fa-location-dot mr-1 text-[8px] text-gray-400"></i>${item.storeName}</span></div>` : ''}
+                                            ${(() => {
+										    let storeText = (item.storeName || '').trim();
+										    let currentSpotName = (spot.name || '').trim();
+										    if (!storeText || storeText === currentSpotName) return '';
+										    let safeStoreName = storeText
+										        .replace(/&/g, "&amp;")
+										        .replace(/</g, "&lt;")
+										        .replace(/>/g, "&gt;")
+										        .replace(/"/g, "&quot;");
+										    return `<div class="mt-0.5"><span class="text-[10px] text-gray-500 font-medium px-1.5 py-0.5 border border-gray-200 rounded bg-white inline-flex items-center"><i class="fa-solid fa-location-dot mr-1 text-[8px] text-gray-400"></i>${safeStoreName}</span></div>`;
+										})()}
 										</div>
                                     </div>
                                     
